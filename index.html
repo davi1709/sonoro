@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>SONORO</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body { background-color: #0a0a0a; color: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px 12px; }
+        
+        .container { background: #141414; padding: 30px; border-radius: 18px; width: 100%; max-width: 520px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #222; text-align: center; }
+        .tela { display: none; }
+        .tela.ativa { display: block; animation: fadeIn 0.4s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 26px; margin-bottom: 15px; font-weight: 700; letter-spacing: 1px; }
+        p { color: #888; margin-bottom: 20px; font-size: 14px; }
+        
+        button { background: #fff; color: #000; border: none; padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; margin-bottom: 12px; }
+        button:hover:not(:disabled) { transform: scale(1.02); background: #e0e0e0; }
+        button:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+        .btn-secundario { background: #222; color: #fff; border: 1px solid #333; }
+        .btn-secundario:hover:not(:disabled) { background: #333; }
+
+        .campo-config { text-align: left; margin-bottom: 15px; }
+        .campo-config label { display: block; font-size: 13px; color: #aaa; margin-bottom: 6px; }
+        select, input[type="text"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #0f0f0f; color: #fff; font-size: 15px; outline: none; transition: border 0.2s; }
+        select:focus, input[type="text"]:focus { border-color: #666; }
+
+        .loading-container { width: 100%; background: #222; border-radius: 10px; height: 8px; margin: 15px 0 8px 0; overflow: hidden; }
+        .loading-bar { height: 100%; background: linear-gradient(90deg, #ff8a00, #e52e71); width: 0%; transition: width 0.1s linear; }
+
+        .grid-albuns { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; max-height: 280px; overflow-y: auto; padding: 4px; }
+        .card-clicavel { position: relative; border-radius: 14px; overflow: hidden; cursor: pointer; aspect-ratio: 1 / 1; box-shadow: 0 0 0 2px #e52e71; transition: filter 0.2s, transform 0.12s, box-shadow 0.2s; }
+        .card-clicavel:active { transform: scale(0.95); }
+        .card-clicavel.inativo { filter: grayscale(1) brightness(0.35); box-shadow: 0 0 0 2px #2a2a2a; }
+        .card-album img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .card-album .nome-card { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); color: #fff; font-size: 10px; font-weight: 700; line-height: 1.25; text-align: center; padding: 16px 5px 6px; }
+        .card-especial { background: linear-gradient(135deg, #ff8a00, #e52e71); display: flex; align-items: center; justify-content: center; }
+        .card-especial .nome-card-central { color: #fff; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; line-height: 1.4; }
+
+        .status-bar { display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; margin-bottom: 15px; color: #aaa; }
+        .pontos-gradiente { background: linear-gradient(90deg, #ff8a00, #e52e71); -webkit-background-clip: text; color: transparent; font-size: 18px; }
+        
+        .tempo-container { width: 100%; background: #222; border-radius: 10px; height: 8px; margin-bottom: 10px; overflow: hidden; }
+        .tempo-barra { height: 100%; background: #fff; width: 100%; transition: width 0.05s linear; }
+        .tempo-texto { font-family: monospace; font-size: 16px; margin-bottom: 20px; color: #ddd; }
+
+        #resultado { margin-top: 15px; font-size: 15px; font-weight: 600; min-height: 24px; }
+        .nome-revelado { color: #fff; font-size: 16px; margin-top: 5px; font-weight: bold; display: block; }
+
+        .seletor-segundos { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; background: #1a1a1a; padding: 8px; border-radius: 10px; border: 1px solid #2a2a2a; }
+        .seletor-segundos button { width: auto; margin-bottom: 0; padding: 6px 14px; border-radius: 8px; }
+        .seletor-display { font-weight: bold; font-size: 15px; color: #fff; min-width: 90px; }
+
+        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-bottom: 15px; }
+        .card-stat { background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #2a2a2a; }
+        .card-stat .label { font-size: 11px; color: #888; text-transform: uppercase; }
+        .card-stat .val { font-size: 14px; font-weight: bold; color: #fff; margin-top: 4px; word-break: break-word; }
+        
+        .historico-container { text-align: left; background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 10px; max-height: 220px; overflow-y: auto; margin-bottom: 20px; padding: 8px; }
+        .item-historico { display: flex; align-items: center; gap: 12px; padding: 8px; border-bottom: 1px solid #1a1a1a; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        .item-historico:hover { background: #1f1f1f; }
+        .item-historico img { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; }
+        .item-historico .info-track { flex: 1; overflow: hidden; }
+        .item-historico .title { font-size: 13px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-historico .status { font-size: 11px; margin-top: 2px; }
+        .status-acerto { color: #1db954; }
+        .status-erro { color: #ff4d4d; }
+
+        .btn-voltar-topo { width: auto; background: transparent; color: #888; border: 1px solid #333; padding: 6px 14px; font-size: 12px; margin-bottom: 15px; border-radius: 20px; }
+        .btn-voltar-topo:hover { background: #1a1a1a; color: #fff; transform: none; }
+
+        @media (max-width: 420px) {
+            .container { padding: 18px; border-radius: 14px; }
+            h1 { font-size: 22px; }
+            .grid-albuns { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+            .card-especial .nome-card-central { font-size: 10px; }
+            .card-album .nome-card { font-size: 9px; padding: 12px 4px 5px; }
+            .status-bar { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA 1: SELEÇÃO -->
+        <div id="tela-inicio" class="tela ativa">
+            <h1>SONORO</h1>
+            
+            <div class="campo-config" style="margin-bottom: 15px;">
+                <label>Escolha o Artista:</label>
+                <select id="seletor-artista" onchange="alterarArtista()">
+                    <option value="6043160">Kali Uchis</option>
+                    <option value="380362">Mother Mother</option>
+                    <option value="5039338">FKA twigs</option>
+                    <option value="399">Radiohead</option>
+                </select>
+            </div>
+
+            <div class="loading-container">
+                <div id="barra-progresso-carga" class="loading-bar"></div>
+            </div>
+            <p id="loading-txt">Carregando faixas...</p>
+            
+            <button id="btn-classico" onclick="selecionarModo('classico')" disabled style="margin-top: 15px;">MODO CLÁSSICO</button>
+            <button id="btn-custom" class="btn-secundario" onclick="selecionarModo('custom')" disabled>MODO PERSONALIZADO</button>
+        </div>
+
+        <!-- TELA 2: CONFIGURAÇÕES -->
+        <div id="tela-config" class="tela">
+            <div style="text-align: left;">
+                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo">← VOLTAR</button>
+            </div>
+            <h1>CONFIGURAÇÕES</h1>
+
+            <div class="campo-config">
+                <label>Filtrar por Álbuns, EPs e Singles:</label>
+                <div id="lista-albuns-filtro" class="grid-albuns"></div>
+            </div>
+            
+            <div class="campo-config">
+                <label>Tempo do trecho de áudio (segundos)</label>
+                <select id="config-trecho">
+                    <option value="1">1 Segundo</option>
+                    <option value="2" selected>2 Segundos</option>
+                    <option value="3">3 Segundos</option>
+                </select>
+            </div>
+
+            <div class="campo-config">
+                <label>Duração para responder (segundos)</label>
+                <select id="config-tempo">
+                    <option value="10">10 Segundos</option>
+                    <option value="15" selected>15 Segundos</option>
+                    <option value="20">20 Segundos</option>
+                </select>
+            </div>
+
+            <div class="campo-config">
+                <label>Quantidade de Músicas</label>
+                <select id="config-rodadas">
+                    <option value="5">5 Músicas</option>
+                    <option value="10" selected>10 Músicas</option>
+                    <option value="15">15 Músicas</option>
+                </select>
+            </div>
+
+            <button onclick="iniciarPartida()">INICIAR PARTIDA</button>
+        </div>
+
+        <!-- TELA 3: JOGO -->
+        <div id="tela-jogo" class="tela">
+            <div style="text-align: left;">
+                <button onclick="sairDaPartida()" class="btn-voltar-topo">← MENU</button>
+            </div>
+
+            <div class="status-bar">
+                <span>Rodada: <span id="rodada-atual">1</span>/<span id="rodada-total">10</span></span>
+                <span>Score: <span id="score-total" class="pontos-gradiente">0</span></span>
+            </div>
+
+            <div class="tempo-container">
+                <div id="barra-tempo" class="tempo-barra"></div>
+            </div>
+            <div id="texto-tempo" class="tempo-texto">00.000s</div>
+
+            <div id="controles-audio">
+                <div id="painel-seletor" class="seletor-segundos" style="display:none;">
+                    <button type="button" onclick="alterarSegundos(-1)" class="btn-secundario" id="btn-menos">-1s</button>
+                    <span class="seletor-display"><span id="txt-segundos-selecionados">1</span>s</span>
+                    <button type="button" onclick="alterarSegundos(1)" class="btn-secundario" id="btn-mais">+1s</button>
+                </div>
+
+                <button id="btn-tocar" onclick="tocarTrecho()">▶️ TOCAR TRECHO</button>
+            </div>
+
+            <form onsubmit="conferir(event)" style="margin-top: 10px;">
+                <input type="text" id="resposta" list="lista-musicas" placeholder="Qual é a música?" autocomplete="off" disabled>
+                <datalist id="lista-musicas"></datalist>
+                <button type="submit" id="btn-enviar" disabled class="btn-secundario" style="margin-top: 10px;">ENVIAR (ENTER)</button>
+            </form>
+
+            <div id="resultado"></div>
+            
+            <div id="painel-pos-resposta" style="display: none; margin-top: 15px;">
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="ouvirAudio('trecho')" class="btn-secundario" style="font-size: 12px;">🔊 OUVIR TRECHO</button>
+                    <button onclick="ouvirAudio('musica')" class="btn-secundario" style="font-size: 12px;">🎵 OUVIR MÚSICA (30s)</button>
+                </div>
+                <button id="btn-proximo" onclick="proximaAcao()" style="background: #1db954; color: #fff; margin-top: 5px;">PRÓXIMA MÚSICA ➔</button>
+            </div>
+        </div>
+
+        <!-- TELA 4: REPORT FINAL -->
+        <div id="tela-fim" class="tela">
+            <div style="text-align: left;">
+                <button onclick="voltarAoMenu()" class="btn-voltar-topo">← VOLTAR</button>
+            </div>
+            <h1>ESTATÍSTICAS</h1>
+            <p style="margin-bottom: 15px;">Resumo da sua performance:</p>
+
+            <div class="grid-stats">
+                <div class="card-stat">
+                    <div class="label">Pontuação Final</div>
+                    <div class="val pontos-gradiente" id="stat-score">0</div>
+                </div>
+                <div class="card-stat">
+                    <div class="label">Músicas Acertadas</div>
+                    <div class="val" id="stat-acertos">0/0</div>
+                </div>
+                <div class="card-stat">
+                    <div class="label">Tempo Médio (Acertos)</div>
+                    <div class="val" id="stat-tempo-medio">0.0s</div>
+                </div>
+                <div class="card-stat">
+                    <div class="label">Mais Rápida</div>
+                    <div class="val" id="stat-mais-rapido">-</div>
+                </div>
+            </div>
+
+            <div style="text-align: left; font-size: 12px; color: #888; margin-bottom: 6px;">Histórico da Partida (Passe o mouse para ouvir):</div>
+            <div class="historico-container" id="stat-historico-lista"></div>
+
+            <button onclick="jogarNovamente()">JOGAR NOVAMENTE</button>
+        </div>
+    </div>
+
+    <audio id="player"></audio>
+
+    <script>
+        let artistaIdAtual = "6043160"; // Kali Uchis ID
+        
+        let bancoDeMusicas = [];
+        let albunsDisponiveis = [];
+        let filaDeMusicas = [];
+        let musicaAtual;
+        let modoJogo = 'classico';
+        
+        let score = 0;
+        let rodadaAtual = 0;
+        let totalRodadas = 10;
+        
+        let tempoTotal = 15;
+        let tempoTrecho = 1;
+        let segundosTocadosAnteriormente = 1;
+        let inicioAleatorioAudio = 0;
+        let tempoRestante = 0;
+        let tempoInicio = 0;
+        let loopTempo = null;
+        let timeoutAudio = null;
+        let rodadaAtiva = false;
+        
+        let pontosBonusClassico = 500;
+        let historicoGeral = [];
+
+        const player = document.getElementById("player");
+
+        function mostrarTela(idTela) {
+            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+            document.getElementById(idTela).classList.add('ativa');
+        }
+
+        function voltarAoMenu() {
+            if (loopTempo) cancelAnimationFrame(loopTempo);
+            if (timeoutAudio) clearTimeout(timeoutAudio);
+            player.pause();
+            rodadaAtiva = false;
+            mostrarTela('tela-inicio');
+        }
+
+        function sairDaPartida() {
+            if (!confirm("Sair da partida atual? O progresso desta partida será perdido.")) return;
+            voltarAoMenu();
+        }
+
+        function jogarNovamente() {
+            iniciarPartida();
+        }
+
+        function normalizarNome(str) {
+            return str.toLowerCase()
+                .replace(/\(.*\)/g, '')
+                .replace(/\[.*\]/g, '')
+                .replace(/-\s*(slowed|sped up|remix|version|smashup|mashup|live|demo|edit).*/gi, '')
+                .replace(/\s+(pt\.?\s*\d+|\d+)$/gi, '')
+                .replace(/[^\w\s]/gi, '')
+                .trim();
+        }
+
+        function ehVersaoAlternativa(titulo) {
+            return /-\s*(slowed|sped up|remix|version|smashup|mashup|live|demo|edit)/i.test(titulo);
+        }
+
+        function buscarDeezer(url) {
+            return new Promise((resolve) => {
+                const script = document.createElement('script');
+                const callbackName = 'cb_' + Math.random().toString(36).substr(2, 9);
+                window[callbackName] = function(data) {
+                    resolve(data);
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                };
+                script.src = `${url}&output=jsonp&callback=${callbackName}`;
+                document.body.appendChild(script);
+            });
+        }
+
+        let geracaoCarga = 0; // usado para cancelar carregamentos antigos quando o artista é trocado
+        let catalogosCache = {}; // guarda o catálogo já baixado de cada artista, pra não recarregar de novo
+
+        async function carregarCatalogo() {
+            const minhaGeracao = ++geracaoCarga;
+            const artistaDestaCarga = artistaIdAtual;
+
+            document.getElementById("btn-classico").disabled = true;
+            document.getElementById("btn-custom").disabled = true;
+            
+            const barraProgresso = document.getElementById("barra-progresso-carga");
+            const txtLoading = document.getElementById("loading-txt");
+
+            // Esse artista já foi carregado antes nesta sessão: reaproveita sem baixar de novo
+            if (catalogosCache[artistaDestaCarga]) {
+                bancoDeMusicas = catalogosCache[artistaDestaCarga].bancoDeMusicas;
+                albunsDisponiveis = catalogosCache[artistaDestaCarga].albunsDisponiveis;
+
+                barraProgresso.style.width = "100%";
+                atualizarDatalistEAlbuns();
+                txtLoading.innerText = `${bancoDeMusicas.length} faixas prontas!`;
+                document.getElementById("btn-classico").disabled = false;
+                document.getElementById("btn-custom").disabled = false;
+                return;
+            }
+            
+            barraProgresso.style.width = "0%";
+            txtLoading.innerText = `Carregando faixas...`;
+            
+            let listaProcessada = new Map();
+            let gruposAlbuns = new Map(); // chave: título exato do álbum -> { titulo, capa, ids: [...] }
+
+            let resAlbuns = await buscarDeezer(`https://api.deezer.com/artist/${artistaIdAtual}/albums?limit=100`);
+
+            // Se outro carregamento (outro artista) começou enquanto esperávamos, cancela este
+            if (minhaGeracao !== geracaoCarga) return;
+            
+            if (resAlbuns && resAlbuns.data && resAlbuns.data.length > 0) {
+                let albuns = resAlbuns.data;
+                let totalAlbuns = albuns.length;
+
+                for (let i = 0; i < totalAlbuns; i++) {
+                    let album = albuns[i];
+                    let tipoGrupo = "album";
+                    
+                    if (album.record_type === "ep") tipoGrupo = "ep";
+                    else if (album.record_type === "single") tipoGrupo = "single";
+
+                    // Agrupa álbuns de estúdio pelo título EXATO: isso funde apenas duplicatas
+                    // reais do catálogo (mesmo título), mas mantém edições diferentes (Deluxe,
+                    // Extended Edition etc.) como opções separadas no filtro.
+                    if (tipoGrupo === "album") {
+                        let chaveGrupo = album.title.trim().toLowerCase();
+                        if (!gruposAlbuns.has(chaveGrupo)) {
+                            gruposAlbuns.set(chaveGrupo, { titulo: album.title, capa: album.cover_medium, ids: [] });
+                        }
+                        gruposAlbuns.get(chaveGrupo).ids.push(album.id);
+                    }
+
+                    let resFaixas = await buscarDeezer(`https://api.deezer.com/album/${album.id}/tracks?limit=100`);
+
+                    if (minhaGeracao !== geracaoCarga) return;
+
+                    if (resFaixas && resFaixas.data) {
+                        resFaixas.data.forEach(track => {
+                            if (track.preview) {
+                                let nomeBase = normalizarNome(track.title);
+                                if (nomeBase.length > 0) {
+                                    const existente = listaProcessada.get(nomeBase);
+                                    // Se ainda não existe, ou se a versão guardada é uma versão
+                                    // alternativa (remix/slowed/live/etc.) e essa aqui é a normal,
+                                    // a normal assume o lugar — independente da ordem de carregamento.
+                                    if (!existente || (ehVersaoAlternativa(existente.nomeExibicao) && !ehVersaoAlternativa(track.title))) {
+                                        listaProcessada.set(nomeBase, {
+                                            nomeNormalizado: nomeBase,
+                                            nomeExibicao: track.title,
+                                            preview: track.preview,
+                                            albumId: album.id,
+                                            capa: album.cover_medium,
+                                            tipoGrupo: tipoGrupo
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    let pct = Math.floor(((i + 1) / totalAlbuns) * 100);
+                    barraProgresso.style.width = `${pct}%`;
+                }
+            }
+
+            if (minhaGeracao !== geracaoCarga) return;
+
+            bancoDeMusicas = Array.from(listaProcessada.values());
+            albunsDisponiveis = Array.from(gruposAlbuns.values()).map(grupo => ({
+                id: grupo.ids[0],
+                idsGrupo: grupo.ids,
+                titulo: grupo.titulo,
+                capa: grupo.capa,
+                tipo: "album"
+            }));
+
+            catalogosCache[artistaDestaCarga] = { bancoDeMusicas, albunsDisponiveis };
+
+            atualizarDatalistEAlbuns();
+
+            txtLoading.innerText = `${bancoDeMusicas.length} faixas prontas!`;
+            document.getElementById("btn-classico").disabled = false;
+            document.getElementById("btn-custom").disabled = false;
+        }
+
+        function atualizarDatalistEAlbuns() {
+            let datalist = document.getElementById("lista-musicas");
+            datalist.innerHTML = "";
+            const nomesUnicos = bancoDeMusicas.map(m => m.nomeExibicao).sort();
+            nomesUnicos.forEach(nome => {
+                const option = document.createElement("option");
+                option.value = nome;
+                datalist.appendChild(option);
+            });
+
+            const containerFiltro = document.getElementById("lista-albuns-filtro");
+            containerFiltro.innerHTML = "";
+
+            const cardEPs = document.createElement("div");
+            cardEPs.className = "card-clicavel card-especial";
+            cardEPs.id = "grupo-ep";
+            cardEPs.innerHTML = `<span class="nome-card-central">📀<br>EPs</span>`;
+            cardEPs.onclick = () => cardEPs.classList.toggle("inativo");
+            containerFiltro.appendChild(cardEPs);
+
+            const cardSingles = document.createElement("div");
+            cardSingles.className = "card-clicavel card-especial";
+            cardSingles.id = "grupo-single";
+            cardSingles.innerHTML = `<span class="nome-card-central">💿<br>Singles</span>`;
+            cardSingles.onclick = () => cardSingles.classList.toggle("inativo");
+            containerFiltro.appendChild(cardSingles);
+
+            albunsDisponiveis.forEach(alb => {
+                const div = document.createElement("div");
+                div.className = "card-clicavel card-album";
+                div.dataset.ids = alb.idsGrupo.join(',');
+                div.innerHTML = `
+                    <img src="${alb.capa}" alt="${alb.titulo}">
+                    <span class="nome-card">${alb.titulo}</span>
+                `;
+                div.onclick = () => div.classList.toggle("inativo");
+                containerFiltro.appendChild(div);
+            });
+        }
+
+        function alterarArtista() {
+            artistaIdAtual = document.getElementById("seletor-artista").value;
+            carregarCatalogo();
+        }
+
+        function selecionarModo(modo) {
+            modoJogo = modo;
+            if (modo === 'classico') {
+                tempoTrecho = 1;
+                tempoTotal = 30;
+                totalRodadas = 10;
+                iniciarPartida();
+            } else {
+                mostrarTela('tela-config');
+            }
+        }
+
+        function iniciarPartida() {
+            let acervoAtivo = [...bancoDeMusicas];
+
+            if (modoJogo === 'custom') {
+                tempoTrecho = parseInt(document.getElementById("config-trecho").value);
+                tempoTotal = parseInt(document.getElementById("config-tempo").value);
+                totalRodadas = parseInt(document.getElementById("config-rodadas").value);
+
+                const incluirEPs = !document.getElementById("grupo-ep").classList.contains("inativo");
+                const incluirSingles = !document.getElementById("grupo-single").classList.contains("inativo");
+
+                const cardsAlbuns = document.querySelectorAll(".card-album");
+                const albunsMarcados = [];
+                cardsAlbuns.forEach(card => {
+                    if (!card.classList.contains("inativo")) {
+                        card.dataset.ids.split(',').forEach(id => albunsMarcados.push(parseInt(id)));
+                    }
+                });
+
+                acervoAtivo = acervoAtivo.filter(m => {
+                    if (m.tipoGrupo === "ep") return incluirEPs;
+                    if (m.tipoGrupo === "single") return incluirSingles;
+                    return albunsMarcados.includes(m.albumId);
+                });
+
+                if (acervoAtivo.length === 0) {
+                    alert("Selecione pelo menos uma opção para jogar!");
+                    return;
+                }
+            }
+            
+            document.getElementById("rodada-total").innerText = totalRodadas;
+            score = 0;
+            rodadaAtual = 0;
+            historicoGeral = [];
+            
+            filaDeMusicas = [...acervoAtivo].sort(() => Math.random() - 0.5);
+
+            prepararRodada();
+            mostrarTela('tela-jogo');
+        }
+
+        function prepararRodada() {
+            rodadaAtual++;
+            if (rodadaAtual > totalRodadas || filaDeMusicas.length === 0) {
+                exibirEstatisticas();
+                return;
+            }
+
+            if (loopTempo) cancelAnimationFrame(loopTempo);
+            if (timeoutAudio) clearTimeout(timeoutAudio);
+            player.pause();
+            player.currentTime = 0;
+
+            document.getElementById("rodada-atual").innerText = rodadaAtual;
+            document.getElementById("resultado").innerText = "";
+            document.getElementById("painel-pos-resposta").style.display = "none";
+            document.getElementById("texto-tempo").innerText = `${tempoTotal.toFixed(3)}s`;
+            document.getElementById("barra-tempo").style.width = "100%";
+            document.getElementById("barra-tempo").style.background = "#fff";
+            
+            document.getElementById("resposta").value = "";
+            document.getElementById("resposta").disabled = true;
+            document.getElementById("btn-enviar").disabled = true;
+            
+            if (modoJogo === 'classico') {
+                tempoTrecho = 1;
+                segundosTocadosAnteriormente = 1;
+                pontosBonusClassico = 500;
+                document.getElementById("painel-seletor").style.display = "flex";
+                document.getElementById("txt-segundos-selecionados").innerText = "1";
+            } else {
+                document.getElementById("painel-seletor").style.display = "none";
+            }
+
+            document.getElementById("btn-tocar").innerText = `▶️ TOCAR TRECHO (${tempoTrecho}s)`;
+            document.getElementById("btn-tocar").disabled = false;
+            
+            musicaAtual = filaDeMusicas.pop();
+            inicioAleatorioAudio = Math.floor(Math.random() * 15); 
+            
+            player.src = musicaAtual.preview;
+            player.load();
+            
+            rodadaAtiva = false;
+        }
+
+        function alterarSegundos(delta) {
+            let novoVal = tempoTrecho + delta;
+            if (novoVal >= 1 && novoVal <= 5) {
+                tempoTrecho = novoVal;
+                document.getElementById("txt-segundos-selecionados").innerText = tempoTrecho;
+                document.getElementById("btn-tocar").innerText = `▶️ TOCAR TRECHO (${tempoTrecho}s)`;
+            }
+        }
+
+        async function tocarTrecho() {
+            if (modoJogo === 'classico') {
+                if (rodadaAtiva) {
+                    pontosBonusClassico = Math.max(0, pontosBonusClassico - 20);
+                    cancelAnimationFrame(loopTempo);
+                }
+                if (tempoTrecho > segundosTocadosAnteriormente) {
+                    let diff = tempoTrecho - segundosTocadosAnteriormente;
+                    pontosBonusClassico = Math.max(0, pontosBonusClassico - (diff * 100));
+                    segundosTocadosAnteriormente = tempoTrecho;
+                }
+            }
+
+            document.getElementById("btn-tocar").disabled = true;
+            document.getElementById("btn-tocar").innerText = "OUVINDO...";
+            
+            try {
+                player.currentTime = inicioAleatorioAudio;
+                await player.play();
+
+                timeoutAudio = setTimeout(() => { 
+                    player.pause();
+                    document.getElementById("btn-tocar").innerText = `🔊 REOUVIR TRECHO (${tempoTrecho}s)`;
+                    document.getElementById("btn-tocar").disabled = false;
+                    
+                    if (!rodadaAtiva) {
+                        rodadaAtiva = true;
+                        document.getElementById("resposta").disabled = false;
+                        document.getElementById("btn-enviar").disabled = false;
+                        document.getElementById("resposta").focus();
+                        tempoInicio = performance.now();
+                    } else {
+                        tempoInicio = performance.now() - ((tempoTotal - tempoRestante) * 1000);
+                    }
+                    
+                    loopTempo = requestAnimationFrame(atualizarTempo);
+                }, tempoTrecho * 1000);
+            } catch (e) {
+                console.error("Erro na reprodução:", e);
+                document.getElementById("btn-tocar").disabled = false;
+                document.getElementById("btn-tocar").innerText = `▶️ TOCAR TRECHO (${tempoTrecho}s)`;
+            }
+        }
+
+        function atualizarTempo(timestamp) {
+            if (!rodadaAtiva) return;
+
+            let decorrido = (timestamp - tempoInicio) / 1000;
+            tempoRestante = Math.max(0, tempoTotal - decorrido);
+
+            document.getElementById("texto-tempo").innerText = `${tempoRestante.toFixed(3)}s`;
+            
+            let porcentagem = (tempoRestante / tempoTotal) * 100;
+            const barra = document.getElementById("barra-tempo");
+            barra.style.width = `${porcentagem}%`;
+
+            if (porcentagem < 25) barra.style.background = "#ff4d4d";
+            else if (porcentagem < 50) barra.style.background = "#ffca28";
+
+            if (tempoRestante > 0) {
+                loopTempo = requestAnimationFrame(atualizarTempo);
+            } else {
+                encerrarRodada(false, "⏰ Tempo esgotado!", 'tempo');
+            }
+        }
+
+        function conferir(event) {
+            event.preventDefault();
+            if (!rodadaAtiva) return;
+
+            let chuteEntrada = document.getElementById("resposta").value;
+            let chuteNormalizado = normalizarNome(chuteEntrada);
+
+            if (chuteNormalizado === musicaAtual.nomeNormalizado) {
+                let pontosGanhos = 0;
+
+                if (modoJogo === 'classico') {
+                    let pontosTempo = Math.floor((tempoRestante / tempoTotal) * 500);
+                    pontosGanhos = pontosTempo + pontosBonusClassico;
+                } else {
+                    let proporcao = tempoRestante / tempoTotal;
+                    pontosGanhos = Math.floor(500 + (proporcao * 500));
+                }
+
+                score += pontosGanhos;
+                document.getElementById("score-total").innerText = score;
+                
+                encerrarRodada(true, `🎉 +${pontosGanhos} pts!`);
+            } else {
+                encerrarRodada(false, `❌ Resposta incorreta!`, 'erro');
+            }
+        }
+
+        function encerrarRodada(acertou, mensagem, motivo) {
+            rodadaAtiva = false;
+            if (loopTempo) cancelAnimationFrame(loopTempo);
+            if (timeoutAudio) clearTimeout(timeoutAudio);
+            player.pause();
+
+            let tempoGasto = tempoTotal - tempoRestante;
+            historicoGeral.push({ musica: musicaAtual, acertou: acertou, tempo: tempoGasto, motivo: motivo });
+
+            let divResultado = document.getElementById("resultado");
+            divResultado.innerHTML = `${mensagem} <br><span class="nome-revelado">Música: ${musicaAtual.nomeExibicao}</span>`;
+            divResultado.style.color = acertou ? "#1db954" : "#ff4d4d";
+
+            document.getElementById("resposta").disabled = true;
+            document.getElementById("btn-enviar").disabled = true;
+            document.getElementById("btn-tocar").disabled = true;
+            document.getElementById("painel-seletor").style.display = "none";
+            
+            const btnProximo = document.getElementById("btn-proximo");
+            if (rodadaAtual === totalRodadas || filaDeMusicas.length === 0) {
+                btnProximo.innerText = "VER ESTATÍSTICAS 📊";
+                btnProximo.style.background = "#e52e71";
+            } else {
+                btnProximo.innerText = "PRÓXIMA MÚSICA ➔";
+                btnProximo.style.background = "#1db954";
+            }
+
+            document.getElementById("painel-pos-resposta").style.display = "block";
+        }
+
+        function proximaAcao() {
+            prepararRodada();
+        }
+
+        function ouvirAudio(tipo) {
+            if (timeoutAudio) clearTimeout(timeoutAudio);
+            player.currentTime = inicioAleatorioAudio; 
+            player.play();
+
+            if (tipo === 'trecho') {
+                timeoutAudio = setTimeout(() => { player.pause(); }, tempoTrecho * 1000);
+            }
+        }
+
+        function exibirEstatisticas() {
+            if (timeoutAudio) clearTimeout(timeoutAudio);
+            player.pause();
+            player.currentTime = 0;
+
+            const acertos = historicoGeral.filter(h => h.acertou);
+
+            document.getElementById("stat-score").innerText = score;
+            document.getElementById("stat-acertos").innerText = `${acertos.length}/${historicoGeral.length}`;
+
+            if (acertos.length > 0) {
+                let somaTempos = acertos.reduce((acc, curr) => acc + curr.tempo, 0);
+                let media = (somaTempos / acertos.length).toFixed(2);
+                document.getElementById("stat-tempo-medio").innerText = `${media}s`;
+
+                let maisRapido = acertos.reduce((min, curr) => curr.tempo < min.tempo ? curr : min, acertos[0]);
+                document.getElementById("stat-mais-rapido").innerText = `${maisRapido.musica.nomeExibicao} (${maisRapido.tempo.toFixed(1)}s)`;
+            } else {
+                document.getElementById("stat-tempo-medio").innerText = "-";
+                document.getElementById("stat-mais-rapido").innerText = "-";
+            }
+
+            const containerHist = document.getElementById("stat-historico-lista");
+            containerHist.innerHTML = "";
+
+            historicoGeral.forEach((item, index) => {
+                const div = document.createElement("div");
+                div.className = "item-historico";
+                div.innerHTML = `
+                    <img src="${item.musica.capa}" alt="Capa">
+                    <div class="info-track">
+                        <div class="title">${index + 1}. ${item.musica.nomeExibicao}</div>
+                        <div class="status ${item.acertou ? 'status-acerto' : 'status-erro'}">
+                            ${item.acertou ? `✓ Acertou em ${item.tempo.toFixed(1)}s` : (item.motivo === 'tempo' ? '⏰ Tempo esgotado' : '✕ Resposta errada')}
+                        </div>
+                    </div>
+                `;
+
+                div.addEventListener("mouseenter", () => {
+                    player.src = item.musica.preview;
+                    player.currentTime = 0;
+                    player.play().catch(() => {});
+                });
+
+                div.addEventListener("mouseleave", () => {
+                    player.pause();
+                });
+
+                div.addEventListener("click", () => {
+                    const jaTocandoEssa = player.src === item.musica.preview && !player.paused;
+                    if (jaTocandoEssa) {
+                        player.pause();
+                    } else {
+                        player.src = item.musica.preview;
+                        player.currentTime = 0;
+                        player.play().catch(() => {});
+                    }
+                });
+
+                containerHist.appendChild(div);
+            });
+
+            mostrarTela('tela-fim');
+        }
+
+        carregarCatalogo();
+    </script>
+</body>
+</html>
