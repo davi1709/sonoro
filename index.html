@@ -29,17 +29,155 @@
         select, input[type="text"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #0f0f0f; color: #fff; font-size: 15px; outline: none; transition: border 0.2s; }
         select:focus, input[type="text"]:focus { border-color: #666; }
 
-        .loading-container { width: 100%; background: #222; border-radius: 10px; height: 8px; margin: 15px 0 8px 0; overflow: hidden; }
+        .loading-container { width: 100%; background: #222; border-radius: 10px; height: 8px; margin: 10px 0 8px 0; overflow: hidden; }
         .loading-bar { height: 100%; background: linear-gradient(90deg, #ff8a00, #e52e71); width: 0%; transition: width 0.1s linear; }
 
-        .grid-albuns { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; max-height: 280px; overflow-y: auto; padding: 4px; }
-        .card-clicavel { position: relative; border-radius: 14px; overflow: hidden; cursor: pointer; aspect-ratio: 1 / 1; box-shadow: 0 0 0 2px #e52e71; transition: filter 0.2s, transform 0.12s, box-shadow 0.2s; }
+        .grid-albuns { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); 
+            gap: 10px; 
+            max-height: 280px; 
+            overflow-y: auto; 
+            padding: 4px; 
+        }
+
+        .grid-artistas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .card-artista {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-artista:hover:not(.carregando) {
+            border-color: #e52e71;
+            transform: translateY(-2px);
+            background: #222;
+        }
+        
+        .card-artista .thumb-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            margin-bottom: 8px;
+        }
+
+        .card-artista img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: filter 0.3s;
+        }
+
+        .card-artista.carregando img {
+            filter: brightness(0.3) grayscale(0.5);
+        }
+
+        .card-artista .overlay-carregando {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .card-artista.carregando .overlay-carregando {
+            display: flex;
+        }
+
+        .card-artista .badge-baixado {
+            display: none;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: #1db954;
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #141414;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .card-artista.baixado .badge-baixado {
+            display: flex;
+        }
+
+        .card-artista .mini-barra-bg {
+            width: 80%;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .card-artista .mini-barra-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            transition: width 0.1s linear;
+        }
+
+        .card-artista .nome-artista {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+
+        .card-clicavel { position: relative; border-radius: 14px; overflow: hidden; cursor: pointer; aspect-ratio: 1 / 1; box-shadow: 0 0 0 2px #e52e71; transition: filter 0.2s, transform 0.12s, box-shadow 0.2s; height: auto; }
         .card-clicavel:active { transform: scale(0.95); }
         .card-clicavel.inativo { filter: grayscale(1) brightness(0.35); box-shadow: 0 0 0 2px #2a2a2a; }
         .card-album img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .card-album .nome-card { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); color: #fff; font-size: 10px; font-weight: 700; line-height: 1.25; text-align: center; padding: 16px 5px 6px; }
         .card-especial { background: linear-gradient(135deg, #ff8a00, #e52e71); display: flex; align-items: center; justify-content: center; }
         .card-especial .nome-card-central { color: #fff; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; line-height: 1.4; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.ativo { display: flex; }
+        .modal-content {
+            background: #1c1c1c;
+            border: 1px solid #333;
+            padding: 24px;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
 
         .status-bar { display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; margin-bottom: 15px; color: #aaa; }
         .pontos-gradiente { background: linear-gradient(90deg, #ff8a00, #e52e71); -webkit-background-clip: text; color: transparent; font-size: 18px; }
@@ -73,14 +211,9 @@
         .btn-voltar-topo { width: auto; background: transparent; color: #888; border: 1px solid #333; padding: 6px 14px; font-size: 12px; margin-bottom: 15px; border-radius: 20px; }
         .btn-voltar-topo:hover { background: #1a1a1a; color: #fff; transform: none; }
 
-        @media (max-width: 420px) {
-            .container { padding: 18px; border-radius: 14px; }
-            h1 { font-size: 22px; }
-            .grid-albuns { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
-            .card-especial .nome-card-central { font-size: 10px; }
-            .card-album .nome-card { font-size: 9px; padding: 12px 4px 5px; }
-            .status-bar { font-size: 12px; }
-        }
+        .add-deezer-box { display: flex; gap: 8px; margin-bottom: 12px; }
+        .add-deezer-box input { flex: 1; }
+        .add-deezer-box button { width: auto; margin-bottom: 0; padding: 0 16px; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -90,35 +223,64 @@
         <div id="tela-inicio" class="tela ativa">
             <h1>SONORO</h1>
             
-            <div class="campo-config" style="margin-bottom: 15px;">
-                <label>Escolha o Artista:</label>
-                <select id="seletor-artista" onchange="alterarArtista()">
-                    <option value="6043160">Kali Uchis</option>
-                    <option value="380362">Mother Mother</option>
-                    <option value="5039338">FKA twigs</option>
-                    <option value="399">Radiohead</option>
-                    <option value="5518450">Melanie Martinez</option>
-                    <option value="9667370">Froid</option>
-                    <option value="5578942">Doja Cat</option>
-                    <option value="630">Björk </option>
-                    <option value="6478881">SOPHIE</option>
-                    <option value="14456487">Juice WRLD</option>
-                </select>
+            <div class="campo-config">
+                <label>Adicionar Novo Artista (Nome ou ID):</label>
+                <div class="add-deezer-box">
+                    <input type="text" id="input-deezer-id" placeholder="Ex: Kali Uchis ou 380362">
+                    <button type="button" id="btn-add-artista" onclick="adicionarArtistaDeezer()">Adicionar</button>
+                </div>
             </div>
 
-            <div class="loading-container">
-                <div id="barra-progresso-carga" class="loading-bar"></div>
+            <select id="seletor-artista" onchange="alterarArtista()" style="display: none;">
+                <option value="6043160">Kali Uchis</option>
+                <option value="380362">Mother Mother</option>
+                <option value="5039338">FKA twigs</option>
+                <option value="399">Radiohead</option>
+                <option value="5518450">Melanie Martinez</option>
+                <option value="9667370">Froid</option>
+                <option value="5578942">Doja Cat</option>
+                <option value="630">Björk </option>
+                <option value="6478881">SOPHIE</option>
+                <option value="14456487">Juice WRLD</option>
+            </select>
+
+            <div class="campo-config">
+                <label>Escolha o Artista:</label>
+                <input type="text" id="input-busca-catalogo" placeholder="🔍 Buscar no catálogo..." oninput="filtrarGridArtistas()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
+                <div id="grid-artistas" class="grid-artistas"></div>
             </div>
-            <p id="loading-txt">Carregando faixas...</p>
-            
-            <button id="btn-classico" onclick="selecionarModo('classico')" disabled style="margin-top: 15px;">MODO CLÁSSICO</button>
-            <button id="btn-custom" class="btn-secundario" onclick="selecionarModo('custom')" disabled>MODO PERSONALIZADO</button>
+
+            <div id="painel-carregamento" style="display: none;">
+                <div class="loading-container">
+                    <div id="barra-progresso-carga" class="loading-bar"></div>
+                </div>
+                <p id="loading-txt">Carregando faixas...</p>
+            </div>
+        </div>
+
+        <!-- MODAL DE SELEÇÃO DE MODO -->
+        <div id="modal-modo" class="modal-overlay">
+            <div class="modal-content">
+                <h2 id="modal-nome-artista" style="font-size: 20px; margin-bottom: 10px;">Artista</h2>
+                
+                <div id="modal-painel-carregamento" style="display: none; margin-bottom: 15px;">
+                    <div class="loading-container">
+                        <div id="modal-barra-progresso-carga" class="loading-bar"></div>
+                    </div>
+                    <p id="modal-loading-txt" style="font-size: 12px; margin-bottom: 0;">Carregando faixas...</p>
+                </div>
+
+                <p style="margin-bottom: 20px; font-size: 13px;">Escolha o modo de jogo para começar:</p>
+                <button id="btn-modal-classico" onclick="confirmarModo('classico')" disabled>MODO CLÁSSICO</button>
+                <button id="btn-modal-custom" onclick="confirmarModo('custom')" class="btn-secundario" disabled>MODO PERSONALIZADO</button>
+                <button onclick="fecharModalModo()" class="btn-secundario" style="border: none; margin-bottom: 0; color: #888;">VOLTAR</button>
+            </div>
         </div>
 
         <!-- TELA 2: CONFIGURAÇÕES -->
         <div id="tela-config" class="tela">
             <div style="text-align: left;">
-                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo">← VOLTAR</button>
+                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo">⬅️ VOLTAR</button>
             </div>
             <h1>CONFIGURAÇÕES</h1>
 
@@ -160,7 +322,7 @@
         <!-- TELA 3: JOGO -->
         <div id="tela-jogo" class="tela">
             <div style="text-align: left;">
-                <button onclick="sairDaPartida()" class="btn-voltar-topo">← MENU</button>
+                <button onclick="sairDaPartida()" class="btn-voltar-topo">⬅️ MENU</button>
             </div>
 
             <div class="status-bar">
@@ -203,7 +365,7 @@
         <!-- TELA 4: REPORT FINAL -->
         <div id="tela-fim" class="tela">
             <div style="text-align: left;">
-                <button onclick="voltarAoMenu()" class="btn-voltar-topo">← VOLTAR</button>
+                <button onclick="voltarAoMenu()" class="btn-voltar-topo">⬅️ VOLTAR</button>
             </div>
             <h1>ESTATÍSTICAS</h1>
             <p style="margin-bottom: 15px;">Resumo da sua performance:</p>
@@ -227,7 +389,7 @@
                 </div>
             </div>
 
-            <div style="text-align: left; font-size: 12px; color: #888; margin-bottom: 6px;">Histórico da Partida (No PC: Passe o mouse para ouvir | No celular: clique duas vezes):</div>
+            <div style="text-align: left; font-size: 12px; color: #888; margin-bottom: 6px;">Histórico da Partida:</div>
             <div class="historico-container" id="stat-historico-lista"></div>
 
             <button onclick="jogarNovamente()">JOGAR NOVAMENTE</button>
@@ -237,8 +399,7 @@
     <audio id="player"></audio>
 
     <script>
-        let artistaIdAtual = "6043160"; // Kali Uchis ID
-        
+        let artistaIdAtual = "6043160";
         let bancoDeMusicas = [];
         let albunsDisponiveis = [];
         let filaDeMusicas = [];
@@ -264,6 +425,19 @@
 
         const player = document.getElementById("player");
 
+        let listaArtistasPadrão = [
+            { id: "6043160", nome: "Kali Uchis" },
+            { id: "380362", nome: "Mother Mother" },
+            { id: "5039338", nome: "FKA twigs" },
+            { id: "399", nome: "Radiohead" },
+            { id: "5518450", nome: "Melanie Martinez" },
+            { id: "9667370", nome: "Froid" },
+            { id: "5578942", nome: "Doja Cat" },
+            { id: "630", nome: "Björk" },
+            { id: "6478881", nome: "SOPHIE" },
+            { id: "14456487", nome: "Juice WRLD" }
+        ];
+
         function mostrarTela(idTela) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
             document.getElementById(idTela).classList.add('ativa');
@@ -287,6 +461,7 @@
         }
 
         function normalizarNome(str) {
+            if (!str) return "";
             return str.toLowerCase()
                 .replace(/\(.*\)/g, '')
                 .replace(/\[.*\]/g, '')
@@ -307,54 +482,132 @@
                 window[callbackName] = function(data) {
                     resolve(data);
                     delete window[callbackName];
-                    document.body.removeChild(script);
+                    if (script.parentNode) document.body.removeChild(script);
+                };
+                script.onerror = function() {
+                    resolve(null);
+                    delete window[callbackName];
+                    if (script.parentNode) document.body.removeChild(script);
                 };
                 script.src = `${url}&output=jsonp&callback=${callbackName}`;
                 document.body.appendChild(script);
             });
         }
 
-        let geracaoCarga = 0; // usado para cancelar carregamentos antigos quando o artista é trocado
-        let catalogosCache = {}; // guarda o catálogo já baixado de cada artista, pra não recarregar de novo
+        let catalogosCache = {}; 
 
-        async function carregarCatalogo() {
-            const minhaGeracao = ++geracaoCarga;
-            const artistaDestaCarga = artistaIdAtual;
+        function atualizarProgressoGlobalUI() {
+            const barraMain = document.getElementById("barra-progresso-carga");
+            const txtMain = document.getElementById("loading-txt");
+            const painelMain = document.getElementById("painel-carregamento");
 
-            document.getElementById("btn-classico").disabled = true;
-            document.getElementById("btn-custom").disabled = true;
-            
-            const barraProgresso = document.getElementById("barra-progresso-carga");
-            const txtLoading = document.getElementById("loading-txt");
+            let artistasEmAndamento = Object.values(catalogosCache).filter(c => c.status === 'carregando');
 
-            // Esse artista já foi carregado antes nesta sessão: reaproveita sem baixar de novo
-            if (catalogosCache[artistaDestaCarga]) {
-                bancoDeMusicas = catalogosCache[artistaDestaCarga].bancoDeMusicas;
-                albunsDisponiveis = catalogosCache[artistaDestaCarga].albunsDisponiveis;
-
-                barraProgresso.style.width = "100%";
-                atualizarDatalistEAlbuns();
-                txtLoading.innerText = `${bancoDeMusicas.length} faixas prontas!`;
-                document.getElementById("btn-classico").disabled = false;
-                document.getElementById("btn-custom").disabled = false;
+            if (artistasEmAndamento.length === 0) {
+                if (barraMain) barraMain.style.width = `100%`;
+                if (txtMain) txtMain.innerText = "Faixas prontas!";
+                setTimeout(() => {
+                    let aindaTem = Object.values(catalogosCache).filter(c => c.status === 'carregando').length;
+                    if (aindaTem === 0 && painelMain) painelMain.style.display = "none";
+                }, 800);
                 return;
             }
+
+            painelMain.style.display = "block";
+            let soma = artistasEmAndamento.reduce((acc, curr) => acc + curr.progresso, 0);
+            let mediaGlobal = Math.floor(soma / artistasEmAndamento.length);
+
+            if (barraMain) barraMain.style.width = `${mediaGlobal}%`;
+            if (txtMain) txtMain.innerText = `Carregando faixas...`;
+        }
+
+        function atualizarModalUI(idArtista) {
+            const cacheObj = catalogosCache[idArtista];
+            if (!cacheObj) return;
+
+            const barraModal = document.getElementById("modal-barra-progresso-carga");
+            const txtModal = document.getElementById("modal-loading-txt");
+            const btnClassico = document.getElementById("btn-modal-classico");
+            const btnCustom = document.getElementById("btn-modal-custom");
+            const modalPainelCarga = document.getElementById("modal-painel-carregamento");
+
+            if (cacheObj.status === 'concluido') {
+                if (barraModal) barraModal.style.width = `100%`;
+                if (txtModal) txtModal.innerText = "Faixas prontas!";
+                if (btnClassico) btnClassico.disabled = false;
+                if (btnCustom) btnCustom.disabled = false;
+                setTimeout(() => {
+                    if (artistaIdAtual === idArtista && catalogosCache[idArtista].status === 'concluido') {
+                        if (modalPainelCarga) modalPainelCarga.style.display = "none";
+                    }
+                }, 300);
+            } else {
+                if (modalPainelCarga) modalPainelCarga.style.display = "block";
+                if (barraModal) barraModal.style.width = `${cacheObj.progresso}%`;
+                if (txtModal) txtModal.innerText = "Carregando faixas...";
+                if (btnClassico) btnClassico.disabled = true;
+                if (btnCustom) btnCustom.disabled = true;
+            }
+        }
+
+        async function carregarCatalogo() {
+            const idArtista = artistaIdAtual;
             
-            barraProgresso.style.width = "0%";
-            txtLoading.innerText = `Carregando faixas...`;
-            
+            if (!catalogosCache[idArtista]) {
+                catalogosCache[idArtista] = {
+                    status: 'carregando',
+                    progresso: 10,
+                    bancoDeMusicas: [],
+                    albunsDisponiveis: []
+                };
+                iniciarDownloadArtista(idArtista);
+            }
+
+            const cacheObj = catalogosCache[idArtista];
+
+            if (cacheObj.status === 'concluido') {
+                bancoDeMusicas = cacheObj.bancoDeMusicas;
+                albunsDisponiveis = cacheObj.albunsDisponiveis;
+                atualizarDatalistEAlbuns();
+            }
+
+            atualizarModalUI(idArtista);
+            atualizarProgressoGlobalUI();
+        }
+
+        async function iniciarDownloadArtista(idArtista) {
+            let cacheObj = catalogosCache[idArtista];
             let listaProcessada = new Map();
-            let gruposAlbuns = new Map(); // chave: título exato do álbum -> { titulo, capa, ids: [...] }
+            let gruposAlbuns = new Map();
 
-            let resAlbuns = await buscarDeezer(`https://api.deezer.com/artist/${artistaIdAtual}/albums?limit=100`);
+            const cardEl = document.getElementById(`card-art-${idArtista}`);
+            if (cardEl) {
+                cardEl.classList.add("carregando");
+                cardEl.classList.remove("baixado");
+            }
 
-            // Se outro carregamento (outro artista) começou enquanto esperávamos, cancela este
-            if (minhaGeracao !== geracaoCarga) return;
-            
-            if (resAlbuns && resAlbuns.data && resAlbuns.data.length > 0) {
-                let albuns = resAlbuns.data;
-                let totalAlbuns = albuns.length;
+            let albuns = [];
+            let index = 0;
+            let totalMax = 300;
 
+            // Busca paginada de todos os álbuns do artista
+            while (index < totalMax) {
+                let resAlbuns = await buscarDeezer(`https://api.deezer.com/artist/${idArtista}/albums?limit=100&index=${index}`);
+                if (resAlbuns && resAlbuns.data && resAlbuns.data.length > 0) {
+                    albuns = albuns.concat(resAlbuns.data);
+                    if (resAlbuns.next && resAlbuns.data.length === 100) {
+                        index += 100;
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            let totalAlbuns = albuns.length;
+
+            if (totalAlbuns > 0) {
                 for (let i = 0; i < totalAlbuns; i++) {
                     let album = albuns[i];
                     let tipoGrupo = "album";
@@ -362,20 +615,19 @@
                     if (album.record_type === "ep") tipoGrupo = "ep";
                     else if (album.record_type === "single") tipoGrupo = "single";
 
-                    // Agrupa álbuns de estúdio pelo título EXATO: isso funde apenas duplicatas
-                    // reais do catálogo (mesmo título), mas mantém edições diferentes (Deluxe,
-                    // Extended Edition etc.) como opções separadas no filtro.
-                    if (tipoGrupo === "album") {
-                        let chaveGrupo = album.title.trim().toLowerCase();
-                        if (!gruposAlbuns.has(chaveGrupo)) {
-                            gruposAlbuns.set(chaveGrupo, { titulo: album.title, capa: album.cover_medium, ids: [] });
-                        }
-                        gruposAlbuns.get(chaveGrupo).ids.push(album.id);
+                    let chaveGrupo = album.title ? album.title.trim().toLowerCase() : String(album.id);
+
+                    if (!gruposAlbuns.has(chaveGrupo)) {
+                        gruposAlbuns.set(chaveGrupo, { 
+                            titulo: album.title || "Álbum Desconhecido", 
+                            capa: album.cover_medium || album.cover || '', 
+                            ids: [],
+                            tipo: tipoGrupo
+                        });
                     }
+                    gruposAlbuns.get(chaveGrupo).ids.push(album.id);
 
                     let resFaixas = await buscarDeezer(`https://api.deezer.com/album/${album.id}/tracks?limit=100`);
-
-                    if (minhaGeracao !== geracaoCarga) return;
 
                     if (resFaixas && resFaixas.data) {
                         resFaixas.data.forEach(track => {
@@ -383,16 +635,13 @@
                                 let nomeBase = normalizarNome(track.title);
                                 if (nomeBase.length > 0) {
                                     const existente = listaProcessada.get(nomeBase);
-                                    // Se ainda não existe, ou se a versão guardada é uma versão
-                                    // alternativa (remix/slowed/live/etc.) e essa aqui é a normal,
-                                    // a normal assume o lugar — independente da ordem de carregamento.
                                     if (!existente || (ehVersaoAlternativa(existente.nomeExibicao) && !ehVersaoAlternativa(track.title))) {
                                         listaProcessada.set(nomeBase, {
                                             nomeNormalizado: nomeBase,
                                             nomeExibicao: track.title,
                                             preview: track.preview,
                                             albumId: album.id,
-                                            capa: album.cover_medium,
+                                            capa: album.cover_medium || (album.cover ? album.cover : ''),
                                             tipoGrupo: tipoGrupo
                                         });
                                     }
@@ -402,28 +651,87 @@
                     }
 
                     let pct = Math.floor(((i + 1) / totalAlbuns) * 100);
-                    barraProgresso.style.width = `${pct}%`;
+                    cacheObj.progresso = pct;
+
+                    const miniFill = document.getElementById(`mini-fill-${idArtista}`);
+                    if (miniFill) miniFill.style.width = `${pct}%`;
+
+                    if (artistaIdAtual === idArtista) {
+                        atualizarModalUI(idArtista);
+                    }
+
+                    atualizarProgressoGlobalUI();
                 }
             }
 
-            if (minhaGeracao !== geracaoCarga) return;
+            // Fallback Top Tracks se a busca por álbuns trouxer poucas músicas
+            if (listaProcessada.size < 5) {
+                let resTop = await buscarDeezer(`https://api.deezer.com/artist/${idArtista}/top?limit=100`);
+                if (resTop && resTop.data) {
+                    resTop.data.forEach(track => {
+                        if (track.preview) {
+                            let nomeBase = normalizarNome(track.title);
+                            if (nomeBase.length > 0) {
+                                const albId = track.album ? track.album.id : 0;
+                                const albTitulo = track.album ? track.album.title : "Outros";
+                                const albCapa = track.album ? track.album.cover_medium : "";
 
-            bancoDeMusicas = Array.from(listaProcessada.values());
-            albunsDisponiveis = Array.from(gruposAlbuns.values()).map(grupo => ({
-                id: grupo.ids[0],
-                idsGrupo: grupo.ids,
-                titulo: grupo.titulo,
-                capa: grupo.capa,
-                tipo: "album"
-            }));
+                                if (albId && !gruposAlbuns.has(albTitulo.toLowerCase())) {
+                                    gruposAlbuns.set(albTitulo.toLowerCase(), {
+                                        titulo: albTitulo,
+                                        capa: albCapa,
+                                        ids: [albId],
+                                        tipo: "album"
+                                    });
+                                }
 
-            catalogosCache[artistaDestaCarga] = { bancoDeMusicas, albunsDisponiveis };
+                                listaProcessada.set(nomeBase, {
+                                    nomeNormalizado: nomeBase,
+                                    nomeExibicao: track.title,
+                                    preview: track.preview,
+                                    albumId: albId,
+                                    capa: albCapa,
+                                    tipoGrupo: 'album'
+                                });
+                            }
+                        }
+                    });
+                }
+            }
 
-            atualizarDatalistEAlbuns();
+            cacheObj.bancoDeMusicas = Array.from(listaProcessada.values());
+            
+            // Filtra o catálogo de álbuns apenas para os que possuem IDs e são categorizados como álbum/música
+            cacheObj.albunsDisponiveis = Array.from(gruposAlbuns.values())
+                .filter(g => g.tipo === "album")
+                .map(grupo => ({
+                    id: grupo.ids[0],
+                    idsGrupo: grupo.ids,
+                    titulo: grupo.titulo,
+                    capa: grupo.capa,
+                    tipo: "album"
+                }));
+            
+            cacheObj.status = 'concluido';
+            cacheObj.progresso = 100;
 
-            txtLoading.innerText = `${bancoDeMusicas.length} faixas prontas!`;
-            document.getElementById("btn-classico").disabled = false;
-            document.getElementById("btn-custom").disabled = false;
+            const miniFillFinal = document.getElementById(`mini-fill-${idArtista}`);
+            if (miniFillFinal) miniFillFinal.style.width = `100%`;
+
+            const cardElFinal = document.getElementById(`card-art-${idArtista}`);
+            if (cardElFinal) {
+                cardElFinal.classList.remove("carregando");
+                cardElFinal.classList.add("baixado");
+            }
+
+            if (artistaIdAtual === idArtista) {
+                bancoDeMusicas = cacheObj.bancoDeMusicas;
+                albunsDisponiveis = cacheObj.albunsDisponiveis;
+                atualizarDatalistEAlbuns();
+                atualizarModalUI(idArtista);
+            }
+
+            atualizarProgressoGlobalUI();
         }
 
         function atualizarDatalistEAlbuns() {
@@ -458,7 +766,7 @@
                 div.className = "card-clicavel card-album";
                 div.dataset.ids = alb.idsGrupo.join(',');
                 div.innerHTML = `
-                    <img src="${alb.capa}" alt="${alb.titulo}">
+                    <img src="${alb.capa || 'https://e-cdns-images.dzcdn.net/images/cover/100x100-000000-80-0-0.jpg'}" alt="${alb.titulo}">
                     <span class="nome-card">${alb.titulo}</span>
                 `;
                 div.onclick = () => div.classList.toggle("inativo");
@@ -469,6 +777,149 @@
         function alterarArtista() {
             artistaIdAtual = document.getElementById("seletor-artista").value;
             carregarCatalogo();
+        }
+
+        async function renderizarGridArtistas(filtro = "") {
+            const grid = document.getElementById("grid-artistas");
+            grid.innerHTML = "";
+
+            const termoFiltro = filtro.toLowerCase().trim();
+
+            for (let art of listaArtistasPadrão) {
+                if (termoFiltro && !art.nome.toLowerCase().includes(termoFiltro)) {
+                    continue;
+                }
+
+                if (!art.foto) {
+                    try {
+                        let res = await buscarDeezer(`https://api.deezer.com/artist/${art.id}`);
+                        if (res && res.picture_medium) {
+                            art.foto = res.picture_medium;
+                        }
+                    } catch (e) {
+                        art.foto = "https://e-cdns-images.dzcdn.net/images/artist/default/100x100-000000-80-0-0.jpg";
+                    }
+                }
+
+                const card = document.createElement("div");
+                card.className = "card-artista";
+                card.id = `card-art-${art.id}`;
+                card.onclick = () => abrirModalArtista(art.id, art.nome);
+                card.innerHTML = `
+                    <div class="thumb-wrapper">
+                        <img src="${art.foto || 'https://e-cdns-images.dzcdn.net/images/artist/default/100x100-000000-80-0-0.jpg'}" alt="${art.nome}">
+                        <div class="badge-baixado">✓</div>
+                        <div class="overlay-carregando">
+                            <div class="mini-barra-bg">
+                                <div class="mini-barra-fill" id="mini-fill-${art.id}"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="nome-artista">${art.nome}</span>
+                `;
+
+                if (catalogosCache[art.id]) {
+                    if (catalogosCache[art.id].status === 'carregando') {
+                        card.classList.add("carregando");
+                    } else if (catalogosCache[art.id].status === 'concluido') {
+                        card.classList.add("baixado");
+                    }
+                }
+
+                grid.appendChild(card);
+            }
+        }
+
+        function filtrarGridArtistas() {
+            const termo = document.getElementById("input-busca-catalogo").value;
+            renderizarGridArtistas(termo);
+        }
+
+        async function adicionarArtistaDeezer() {
+            const input = document.getElementById("input-deezer-id");
+            const btn = document.getElementById("btn-add-artista");
+            const entrada = input.value.trim();
+
+            if (!entrada) {
+                alert("Digite o nome ou ID do artista!");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "...";
+
+            try {
+                let artistaEncontrado = null;
+
+                if (/^\d+$/.test(entrada)) {
+                    let res = await buscarDeezer(`https://api.deezer.com/artist/${entrada}`);
+                    if (res && res.id) artistaEncontrado = res;
+                } else {
+                    let res = await buscarDeezer(`https://api.deezer.com/search/artist?q=${encodeURIComponent(entrada)}`);
+                    if (res && res.data && res.data.length > 0) {
+                        artistaEncontrado = res.data[0];
+                    }
+                }
+
+                if (artistaEncontrado && artistaEncontrado.id) {
+                    const idStr = String(artistaEncontrado.id);
+                    const nomeStr = artistaEncontrado.name;
+
+                    const jaExiste = listaArtistasPadrão.find(a => String(a.id) === idStr || a.nome.toLowerCase() === nomeStr.toLowerCase());
+                    
+                    if (jaExiste) {
+                        alert(`O artista "${jaExiste.nome}" já está na lista!`);
+                        input.value = "";
+                        btn.disabled = false;
+                        btn.innerText = "Adicionar";
+                        return;
+                    }
+
+                    const novo = {
+                        id: idStr,
+                        nome: nomeStr,
+                        foto: artistaEncontrado.picture_medium || artistaEncontrado.picture
+                    };
+
+                    listaArtistasPadrão.unshift(novo);
+
+                    const seletor = document.getElementById("seletor-artista");
+                    const opt = document.createElement("option");
+                    opt.value = idStr;
+                    opt.innerText = nomeStr;
+                    seletor.appendChild(opt);
+
+                    document.getElementById("input-busca-catalogo").value = "";
+                    await renderizarGridArtistas();
+
+                    input.value = "";
+                    abrirModalArtista(idStr, nomeStr);
+                } else {
+                    alert("Nenhum artista encontrado com essa busca.");
+                }
+            } catch (e) {
+                alert("Erro ao buscar o artista.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Adicionar";
+            }
+        }
+
+        function abrirModalArtista(id, nome) {
+            artistaIdAtual = id;
+            document.getElementById("seletor-artista").value = id;
+            document.getElementById("modal-nome-artista").innerText = nome;
+            document.getElementById("modal-modo").classList.add("ativo");
+            carregarCatalogo();
+        }
+
+        function fecharModalModo() {
+            document.getElementById("modal-modo").classList.remove("ativo");
+        }
+
+        function confirmarModo(modo) {
+            fecharModalModo();
+            selecionarModo(modo);
         }
 
         function selecionarModo(modo) {
@@ -745,7 +1196,7 @@
                 const div = document.createElement("div");
                 div.className = "item-historico";
                 div.innerHTML = `
-                    <img src="${item.musica.capa}" alt="Capa">
+                    <img src="${item.musica.capa || 'https://e-cdns-images.dzcdn.net/images/cover/100x100-000000-80-0-0.jpg'}" alt="Capa">
                     <div class="info-track">
                         <div class="title">${index + 1}. ${item.musica.nomeExibicao}</div>
                         <div class="status ${item.acertou ? 'status-acerto' : 'status-erro'}">
@@ -781,7 +1232,7 @@
             mostrarTela('tela-fim');
         }
 
-        carregarCatalogo();
+        renderizarGridArtistas();
     </script>
 </body>
 </html>
