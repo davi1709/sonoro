@@ -4,213 +4,425 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>SONORO</title>
+    <!-- Favicon 64x64 -->
+    <link rel="icon" href="favicon.png" sizes="64x64" type="image/png">
+    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
-        body { background-color: #0a0a0a; color: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px 12px; }
+        body { background-color: #0a0a0a; color: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px 12px; overflow-x: hidden; }
         
-        .container { background: #141414; padding: 30px; border-radius: 18px; width: 100%; max-width: 520px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #222; text-align: center; }
+        /* TELA DE APRESENTAÇÃO E HOME UNIFICADAS */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .svg-container {
+            width: 100vw;
+            max-width: 100vw;
+            height: auto;
+            display: block;
+        }
+
+        /* Traço do S (dura 3 segundos até bater no canto da tela) */
+        .s-line {
+            stroke-dasharray: 2500;
+            stroke-dashoffset: 2500;
+            animation: drawSLine 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes drawSLine {
+            0% { stroke-dashoffset: 2500; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* Letras ONORO iniciando logo que o S encosta na borda (3.0s) */
+        .letter-onoro {
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+            opacity: 0;
+            animation: drawLetter 0.25s ease-out forwards;
+        }
+
+        .letter-o1 { animation-delay: 3.00s; }
+        .letter-n  { animation-delay: 3.10s; }
+        .letter-o2 { animation-delay: 3.20s; }
+        .letter-r  { animation-delay: 3.30s; }
+        .letter-o3 { animation-delay: 3.40s; }
+
+        @keyframes drawLetter {
+            0% { stroke-dasharray: 800; opacity: 0; }
+            15% { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 1; }
+        }
+
+        /* Container de botões iniciando com opacidade 0 e desvanecendo aos 3 segundos */
+        .home-buttons-container {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 320px;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            animation: fadeInButtons 0.8s ease-out 3s forwards;
+        }
+
+        @keyframes fadeInButtons {
+            to {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
+
+        /* Estilização universal de botões */
+        button, .btn-jogar-principal, .btn-como-jogar-principal, .btn-mini-step, .btn-mini-play {
+            border-radius: 8px !important;
+        }
+
+        .btn-jogar-principal {
+            background-color: #ff0055 !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+        }
+        .btn-jogar-principal:hover {
+            background-color: #ff2a70 !important;
+            transform: scale(1.02);
+        }
+
+        .btn-como-jogar-principal {
+            background-color: #0a0a0a !important;
+            color: #ff0055 !important;
+            border: 2px solid #ff0055 !important;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .btn-como-jogar-principal:hover {
+            background-color: #1a050d !important;
+            transform: scale(1.02);
+        }
+
+        .container { 
+            background: #141414; 
+            padding: 30px 20px; 
+            border-radius: 18px; 
+            width: 100%; 
+            max-width: 520px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            border: 1px solid #222; 
+            text-align: center; 
+            overflow: hidden; 
+        }
+        
         .tela { display: none; }
         .tela.ativa { display: block; animation: fadeIn 0.4s ease; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 26px; margin-bottom: 15px; font-weight: 700; letter-spacing: 1px; }
-        p { color: #888; margin-bottom: 20px; font-size: 14px; }
+        .logo-header {
+            width: calc(100% + 40px);
+            max-width: none;
+            margin-left: -20px;
+            margin-right: -20px;
+            height: auto;
+            margin-bottom: 20px;
+            display: block;
+            object-fit: cover;
+        }
+
+        p { color: #888; margin-bottom: 20px; font-size: 14px; line-height: 1.5; }
         
-        button { background: #fff; color: #000; border: none; padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; margin-bottom: 12px; }
+        button { background: #fff; color: #000; border: none; padding: 14px 20px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; width: 100%; margin-bottom: 12px; }
         button:hover:not(:disabled) { transform: scale(1.02); background: #e0e0e0; }
         button:disabled { background: #333; color: #666; cursor: not-allowed; }
 
         .btn-secundario { background: #222; color: #fff; border: 1px solid #333; }
         .btn-secundario:hover:not(:disabled) { background: #333; }
 
-        .campo-config { text-align: left; margin-bottom: 15px; }
+        .campo-config { text-align: left; margin-bottom: 15px; position: relative; }
         .campo-config label { display: block; font-size: 13px; color: #aaa; margin-bottom: 6px; }
-        select, input[type="text"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #0f0f0f; color: #fff; font-size: 15px; outline: none; transition: border 0.2s; }
+        select, input[type="text"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #0f0f0f; color: #fff; font-size: 15px; outline: none; transition: border 0.2s; }
         select:focus, input[type="text"]:focus { border-color: #666; }
 
-        .loading-container { width: 100%; background: #222; border-radius: 10px; height: 8px; margin: 10px 0 8px 0; overflow: hidden; }
-        .loading-bar { height: 100%; background: linear-gradient(90deg, #ff8a00, #e52e71); width: 0%; transition: width 0.1s linear; }
-
-        /* GRID E CARDS DE ÁLBUNS CORRIGIDOS */
-        .grid-albuns { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
-            gap: 12px; 
-            max-height: 300px; 
-            overflow-y: auto; 
-            padding: 6px; 
+        /* AUTOCOMPLETE */
+        .autocomplete-list {
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            background: #1c1c1c; border: 1px solid #333; border-top: none;
+            border-radius: 0 0 8px 8px; max-height: 220px; overflow-y: auto;
+            z-index: 100; box-shadow: 0 8px 16px rgba(0,0,0,0.5); display: none;
         }
 
-        .card-clicavel { 
-            position: relative; 
-            border-radius: 14px; 
-            overflow: hidden; 
-            cursor: pointer; 
-            aspect-ratio: 1 / 1; 
-            width: 100%;
-            box-shadow: 0 0 0 2px #e52e71; 
-            transition: filter 0.2s, transform 0.12s, box-shadow 0.2s; 
-            display: flex;
-            flex-direction: column;
+        .autocomplete-item {
+            display: flex; align-items: center; padding: 10px 12px;
+            cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #282828;
         }
+        .autocomplete-item:hover { background: #2a2a2a; }
+        .autocomplete-item img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+        .autocomplete-item span { font-size: 14px; font-weight: 600; color: #fff; }
+
+        /* CARREGAMENTO ROSA PADRÃO #ff0055 */
+        .loading-container { width: 100%; background: #222; border-radius: 8px; height: 8px; margin: 10px 0 8px 0; overflow: hidden; }
+        .loading-bar { height: 100%; background: #ff0055; width: 0%; transition: width 0.1s linear; }
+
+        /* GRID E CARDS DE ÁLBUNS */
+        .grid-albuns { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; max-height: 300px; overflow-y: auto; padding: 6px; }
+        .card-clicavel { position: relative; border-radius: 8px; overflow: hidden; cursor: pointer; aspect-ratio: 1 / 1; width: 100%; box-shadow: 0 0 0 2px #ff0055; transition: filter 0.2s, transform 0.12s, box-shadow 0.2s; display: flex; flex-direction: column; }
         .card-clicavel:active { transform: scale(0.95); }
         .card-clicavel.inativo { filter: grayscale(1) brightness(0.35); box-shadow: 0 0 0 2px #2a2a2a; }
         .card-album img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .card-album .nome-card { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); color: #fff; font-size: 10px; font-weight: 700; line-height: 1.25; text-align: center; padding: 16px 5px 6px; }
-        .card-especial { background: linear-gradient(135deg, #ff8a00, #e52e71); display: flex; align-items: center; justify-content: center; }
+        
+        .card-especial { background: #ff0055; display: flex; align-items: center; justify-content: center; }
         .card-especial .nome-card-central { color: #fff; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; line-height: 1.4; }
 
-        .grid-artistas {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 12px;
-            max-height: 320px;
-            overflow-y: auto;
-            padding: 4px;
-            margin-bottom: 15px;
-        }
-        
-        .card-artista {
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 10px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .card-artista:hover:not(.carregando) {
-            border-color: #e52e71;
-            transform: translateY(-2px);
-            background: #222;
-        }
-        
-        .card-artista .thumb-wrapper {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            margin-bottom: 8px;
-        }
+        .grid-artistas { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 320px; overflow-y: auto; padding: 4px; margin-bottom: 15px; }
+        .card-artista { background: #1a1a1a; border-radius: 8px; padding: 10px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; }
+        .card-artista:hover:not(.carregando) { border-color: #ff0055; transform: translateY(-2px); background: #222; }
+        .card-artista .thumb-wrapper { position: relative; width: 70px; height: 70px; margin-bottom: 8px; }
+        .card-artista img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: filter 0.3s; }
+        .card-artista.carregando img { filter: brightness(0.3) grayscale(0.5); }
+        .card-artista .overlay-carregando { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; flex-direction: column; }
+        .card-artista.carregando .overlay-carregando { display: flex; }
+        .card-artista .badge-baixado { display: none; position: absolute; bottom: 2px; right: 2px; background: #1db954; color: #fff; width: 20px; height: 20px; border-radius: 50%; font-size: 12px; font-weight: bold; align-items: center; justify-content: center; border: 2px solid #141414; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .card-artista.baixado .badge-baixado { display: flex; }
+        .card-artista .mini-barra-bg { width: 80%; height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
+        .card-artista .mini-barra-fill { height: 100%; width: 0%; background: #ff0055; transition: width 0.1s linear; }
+        .card-artista .nome-artista { font-size: 12px; font-weight: 600; color: #fff; word-break: break-word; line-height: 1.2; }
 
-        .card-artista img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: filter 0.3s;
-        }
-
-        .card-artista.carregando img {
-            filter: brightness(0.3) grayscale(0.5);
-        }
-
-        .card-artista .overlay-carregando {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.6);
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .card-artista.carregando .overlay-carregando {
-            display: flex;
-        }
-
-        .card-artista .badge-baixado {
-            display: none;
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            background: #1db954;
-            color: #fff;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            font-size: 12px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #141414;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .card-artista.baixado .badge-baixado {
-            display: flex;
-        }
-
-        .card-artista .mini-barra-bg {
-            width: 80%;
-            height: 6px;
-            background: #333;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .card-artista .mini-barra-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ff8a00, #e52e71);
-            transition: width 0.1s linear;
-        }
-
-        .card-artista .nome-artista {
-            font-size: 12px;
-            font-weight: 600;
-            color: #fff;
-            word-break: break-word;
-            line-height: 1.2;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
         .modal-overlay.ativo { display: flex; }
-        .modal-content {
-            background: #1c1c1c;
-            border: 1px solid #333;
-            padding: 24px;
-            border-radius: 18px;
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
+        .modal-content { background: #1c1c1c; border: 1px solid #333; padding: 24px; border-radius: 12px; width: 100%; max-width: 380px; text-align: center; }
+
+        /* CORES DOS BOTÕES DE MODO: CINZA QUANDO DESATIVADOS, ROSA QUANDO ATIVADOS */
+        .btn-modo-classico:disabled,
+        .btn-modo-vazado:disabled {
+            background-color: #222 !important;
+            color: #666 !important;
+            border-color: #333 !important;
+            cursor: not-allowed !important;
+        }
+
+        .btn-modo-classico {
+            background-color: #ff0055 !important;
+            color: #ffffff !important;
+            border: none !important;
+        }
+        .btn-modo-classico:hover:not(:disabled) {
+            background-color: #ff2a70 !important;
+        }
+
+        .btn-modo-vazado {
+            background-color: #1c1c1c !important;
+            color: #ff0055 !important;
+            border: 2px solid #ff0055 !important;
+        }
+        .btn-modo-vazado:hover:not(:disabled) {
+            background-color: #28101a !important;
+        }
+
+        .modo-opcao-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .modo-opcao-container button {
+            margin-bottom: 0 !important;
+            flex: 1;
+        }
+
+        .btn-help-info {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px;
+            padding: 0 !important;
+            margin-bottom: 0 !important;
+            background: #282828 !important;
+            color: #ff0055 !important;
+            border: 1px solid #333 !important;
+            border-radius: 8px !important;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tooltip-explicacao {
+            display: none;
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #eee;
+            border: 1px solid #ff0055;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: normal;
+            line-height: 1.4;
+            width: 260px;
+            z-index: 1050;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            text-align: left;
+            pointer-events: none;
+        }
+
+        .btn-help-info:hover .tooltip-explicacao,
+        .btn-help-info.ativo .tooltip-explicacao {
+            display: block;
         }
 
         .status-bar { display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; margin-bottom: 15px; color: #aaa; }
-        .pontos-gradiente { background: linear-gradient(90deg, #ff8a00, #e52e71); -webkit-background-clip: text; color: transparent; font-size: 18px; }
+        .pontos-gradiente { color: #ff0055; font-size: 18px; font-weight: bold; }
         
-        .tempo-container { width: 100%; background: #222; border-radius: 10px; height: 8px; margin-bottom: 10px; overflow: hidden; }
+        .tempo-container { width: 100%; background: #222; border-radius: 8px; height: 8px; margin-bottom: 10px; overflow: hidden; }
         .tempo-barra { height: 100%; background: #fff; width: 100%; transition: width 0.05s linear; }
         .tempo-texto { font-family: monospace; font-size: 16px; margin-bottom: 20px; color: #ddd; }
 
+        /* PLAYER MINIMALISTA */
+        .player-minimalista {
+            background: #0d0d0d;
+            border: 1px solid #282828;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        /* ONDAS SONORAS REATIVAS */
+        .visualizador-ondas {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 48px;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .barra-onda {
+            width: 4px;
+            height: 6px;
+            background: #333;
+            border-radius: 2px;
+            transition: height 0.05s ease, background 0.2s;
+        }
+
+        .visualizador-ondas.ativo .barra-onda {
+            background: #ff0055;
+        }
+
+        .linha-trecho-container {
+            width: 100%;
+            height: 4px;
+            background: #222;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .linha-trecho-progresso {
+            height: 100%;
+            width: 0%;
+            background: #ff0055;
+            transition: width 0.05s linear;
+        }
+
+        .controles-minimalistas {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .btn-mini-step {
+            width: 44px;
+            height: 44px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0; margin: 0;
+        }
+
+        .btn-mini-play {
+            flex: 1;
+            height: 44px;
+            background: #fff;
+            color: #000;
+            font-size: 14px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0; padding: 0 15px;
+        }
+
+        /* MODO MARCAR (OPÇÕES) */
+        .grid-opcoes-musica {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-opcao-marcar {
+            background: #1a1a1a;
+            color: #fff;
+            border: 1px solid #333;
+            padding: 12px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s, border-color 0.2s;
+            word-break: break-word;
+            margin-bottom: 0;
+        }
+
+        .btn-opcao-marcar:hover:not(:disabled) {
+            background: #282828;
+            border-color: #ff0055;
+        }
+
         #resultado { margin-top: 15px; font-size: 15px; font-weight: 600; min-height: 24px; }
         .nome-revelado { color: #fff; font-size: 16px; margin-top: 5px; font-weight: bold; display: block; }
-
-        .seletor-segundos { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; background: #1a1a1a; padding: 8px; border-radius: 10px; border: 1px solid #2a2a2a; }
-        .seletor-segundos button { width: auto; margin-bottom: 0; padding: 6px 14px; border-radius: 8px; }
-        .seletor-display { font-weight: bold; font-size: 15px; color: #fff; min-width: 90px; }
 
         .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-bottom: 15px; }
         .card-stat { background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #2a2a2a; }
         .card-stat .label { font-size: 11px; color: #888; text-transform: uppercase; }
         .card-stat .val { font-size: 14px; font-weight: bold; color: #fff; margin-top: 4px; word-break: break-word; }
         
-        .historico-container { text-align: left; background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 10px; max-height: 220px; overflow-y: auto; margin-bottom: 20px; padding: 8px; }
+        .historico-container { text-align: left; background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 8px; max-height: 220px; overflow-y: auto; margin-bottom: 20px; padding: 8px; }
         .item-historico { display: flex; align-items: center; gap: 12px; padding: 8px; border-bottom: 1px solid #1a1a1a; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
         .item-historico:hover { background: #1f1f1f; }
         .item-historico img { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; }
@@ -220,34 +432,133 @@
         .status-acerto { color: #1db954; }
         .status-erro { color: #ff4d4d; }
 
-        .btn-voltar-topo { width: auto; background: transparent; color: #888; border: 1px solid #333; padding: 6px 14px; font-size: 12px; margin-bottom: 15px; border-radius: 20px; }
+        .btn-voltar-topo { width: auto; background: transparent; color: #888; border: 1px solid #333; padding: 6px 14px; font-size: 12px; margin-bottom: 15px; border-radius: 8px; }
         .btn-voltar-topo:hover { background: #1a1a1a; color: #fff; transform: none; }
 
-        .add-deezer-box { display: flex; gap: 8px; margin-bottom: 12px; }
+        .add-deezer-box { display: flex; gap: 8px; margin-bottom: 12px; position: relative; }
         .add-deezer-box input { flex: 1; }
         .add-deezer-box button { width: auto; margin-bottom: 0; padding: 0 16px; font-size: 13px; }
 
-        /* AJUSTES ESPECÍFICOS PARA DISPOSITIVOS MÓVEIS */
+        .how-to-play-card {
+            background: #0f0f0f;
+            border: 1px solid #282828;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .how-to-play-card h3 {
+            color: #ff0055;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .how-to-play-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .how-to-play-card li {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
         @media (max-width: 480px) {
-            .grid-albuns {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
+            .home-buttons-container {
+                max-width: 240px !important;
+                margin-top: 24px !important;
+                gap: 10px !important;
             }
+
+            .btn-jogar-principal {
+                padding: 12px 16px !important;
+                font-size: 14px !important;
+                border-radius: 8px !important;
+            }
+
+            .btn-como-jogar-principal {
+                padding: 10px 16px !important;
+                font-size: 13px !important;
+                border-radius: 8px !important;
+            }
+
+            .btn-mini-play {
+                font-size: 11px !important;
+                white-space: nowrap !important;
+                padding: 0 6px !important;
+                gap: 4px !important;
+            }
+
+            .btn-mini-step {
+                width: 38px !important;
+                height: 44px !important;
+                flex-shrink: 0 !important;
+            }
+
+            .controles-minimalistas {
+                gap: 6px !important;
+            }
+
+            .grid-albuns { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .visualizador-ondas { gap: 2px; }
+            .barra-onda { width: 3px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- TELA 0: ANIMATED SPLASH SCREEN -->
+    <div id="splash-screen">
+        <svg class="svg-container" viewBox="0 0 1200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="s-line" d="M 0 190 L 350 190 L 350 140 L 250 140 L 250 90 L 1200 90" stroke="#ff0055" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path class="letter-onoro letter-o1" d="M 405 110 L 505 110 L 505 190 L 405 190 Z" stroke="#ff0055" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path class="letter-onoro letter-n"  d="M 545 190 L 545 110 L 625 190 L 625 110" stroke="#ff0055" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path class="letter-onoro letter-o2" d="M 665 110 L 765 110 L 765 190 L 665 190 Z" stroke="#ff0055" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path class="letter-onoro letter-r"  d="M 805 190 L 805 110 L 895 110 L 895 150 L 805 150 M 835 150 L 895 190" stroke="#ff0055" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path class="letter-onoro letter-o3" d="M 935 110 L 1035 110 L 1035 190 L 935 190 Z" stroke="#ff0055" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+        </svg>
+
+        <div id="home-buttons" class="home-buttons-container">
+            <button class="btn-jogar-principal" onclick="iniciarFluxoJogo()">JOGAR</button>
+            <button class="btn-como-jogar-principal" onclick="abrirTelaComoJogar()">COMO JOGAR</button>
+        </div>
+    </div>
+
     <div class="container">
-        <!-- TELA 1: SELEÇÃO -->
-        <div id="tela-inicio" class="tela ativa">
-            <h1>SONORO</h1>
+        <!-- TELA COMO JOGAR -->
+        <div id="tela-como-jogar" class="tela">
+            <div style="text-align: left;">
+                <button onclick="voltarParaSplash()" class="btn-voltar-topo">← VOLTAR</button>
+            </div>
+            
+            <img src="1.png" alt="SONORO" class="logo-header">
+
+            <div class="how-to-play-card">
+                <h3>COMO JOGAR</h3>
+                <ul>
+                    <li> <strong>Escolha um Artista:</strong> Selecione o artista entre a lista ou adicione um novo diretamente na barra superior.</li>
+                    <li> <strong>Ouça o Trecho:</strong> Aperte o play para ouvir uma amostra rápida da música (de 1 a 10 segundos).</li>
+                    <li> <strong>Adivinhe Rápido:</strong> Digite o nome da música ou marque uma das opções antes que o tempo acabe!</li>
+                    <li> <strong>Acumule Pontos:</strong> Quanto mais rápido você acertar, menor for o trecho e menos você ouvi-lo maior será sua pontuação. Teste seus conhecimentos musicais!</li>
+                </ul>
+            </div>
+
+            <button class="btn-jogar-principal" onclick="iniciarFluxoJogo()">JOGAR AGORA</button>
+        </div>
+
+        <!-- TELA 1: SELEÇÃO DE ARTISTA -->
+        <div id="tela-inicio" class="tela">
+            <img src="1.png" alt="SONORO" class="logo-header">
             
             <div class="campo-config">
                 <label>Adicionar Novo Artista (Nome ou ID Deezer):</label>
                 <div class="add-deezer-box">
-                    <input type="text" id="input-deezer-id" placeholder="Ex: Kali Uchis ou 380362">
+                    <input type="text" id="input-deezer-id" placeholder="Ex: ABBA, Kali Uchis..." oninput="buscarSugestoesArtista(this.value)" autocomplete="off">
                     <button type="button" id="btn-add-artista" onclick="adicionarArtistaDeezer()">Adicionar</button>
+                    <div id="autocomplete-artistas" class="autocomplete-list"></div>
                 </div>
             </div>
 
@@ -259,14 +570,14 @@
                 <option value="5518450">Melanie Martinez</option>
                 <option value="9667370">Froid</option>
                 <option value="5578942">Doja Cat</option>
-                <option value="630">Björk </option>
+                <option value="630">Björk</option>
                 <option value="6478881">SOPHIE</option>
                 <option value="14456487">Juice WRLD</option>
             </select>
 
             <div class="campo-config">
-                <label>Escolha o Artista:</label>
-                <input type="text" id="input-busca-catalogo" placeholder="🔍 Buscar no catálogo..." oninput="filtrarGridArtistas()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
+                <label>Catálogo de Artistas:</label>
+                <input type="text" id="input-busca-catalogo" placeholder="Buscar no catálogo..." oninput="filtrarGridArtistas()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
                 <div id="grid-artistas" class="grid-artistas"></div>
             </div>
 
@@ -290,19 +601,58 @@
                     <p id="modal-loading-txt" style="font-size: 12px; margin-bottom: 0;">Carregando faixas...</p>
                 </div>
 
-                <p style="margin-bottom: 20px; font-size: 13px;">Escolha o modo de jogo para começar:</p>
-                <button id="btn-modal-classico" onclick="confirmarModo('classico')" disabled>MODO CLÁSSICO</button>
-                <button id="btn-modal-custom" onclick="confirmarModo('custom')" class="btn-secundario" disabled>MODO PERSONALIZADO</button>
-                <button onclick="fecharModalModo()" class="btn-secundario" style="border: none; margin-bottom: 0; color: #888;">VOLTAR</button>
+                <p style="margin-bottom: 15px; font-size: 13px;">Escolha o modo de jogo para começar:</p>
+                
+                <div class="modo-opcao-container">
+                    <button id="btn-modal-classico" class="btn-modo-classico" onclick="confirmarModo('classico')" disabled>MODO CLÁSSICO</button>
+                    <div class="btn-help-info" onclick="toggleHelpTooltip(this, event)">?
+                        <div class="tooltip-explicacao">Acerte a música antes que o tempo acabe! Quanto menor o trecho e menos você ouvi-lo, mais pontos!</div>
+                    </div>
+                </div>
+
+                <div class="modo-opcao-container">
+                    <button id="btn-modal-custom" class="btn-modo-vazado" onclick="confirmarModo('custom')" disabled>MODO PERSONALIZADO</button>
+                    <div class="btn-help-info" onclick="toggleHelpTooltip(this, event)">?
+                        <div class="tooltip-explicacao">Personalize sua experiência selecionando tempo, inclusão de álbuns e até mesmo a duração de trechos.</div>
+                    </div>
+                </div>
+
+                <div class="modo-opcao-container">
+                    <button id="btn-modal-zen" class="btn-modo-vazado" onclick="confirmarModo('zen')" disabled>MODO ZEN</button>
+                    <div class="btn-help-info" onclick="toggleHelpTooltip(this, event)">?
+                        <div class="tooltip-explicacao">Jogue com calma! Com trechos de grande duração e sem timers, agora você pode demorar o quanto quiser para responder.</div>
+                    </div>
+                </div>
+
+                <button onclick="fecharModalModo()" class="btn-secundario" style="border: none; margin-top: 10px; margin-bottom: 0; color: #888;">VOLTAR</button>
             </div>
         </div>
 
-        <!-- TELA 2: CONFIGURAÇÕES -->
+        <!-- MODAL SELEÇÃO TIPO DE RESPOSTA (INÍCIO DA PARTIDA) -->
+        <div id="modal-estilo-resposta" class="modal-overlay">
+            <div class="modal-content">
+                <h2 style="font-size: 18px; margin-bottom: 10px;">Estilo de Resposta</h2>
+                <p style="margin-bottom: 15px; font-size: 13px;">Como deseja responder durante a partida?</p>
+
+                <button class="btn-modo-classico" onclick="selecionarEstiloEIniciar('digitar')" style="margin-bottom: 10px;">DIGITAR RESPOSTA</button>
+                <button class="btn-modo-vazado" onclick="selecionarEstiloEIniciar('marcar')">MARCAR (5 OPÇÕES)</button>
+            </div>
+        </div>
+
+        <!-- TELA 2: CONFIGURAÇÕES (MODO PERSONALIZADO) -->
         <div id="tela-config" class="tela">
             <div style="text-align: left;">
-                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo">⬅️ VOLTAR</button>
+                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo">← VOLTAR</button>
             </div>
-            <h1>CONFIGURAÇÕES</h1>
+            <img src="1.png" alt="SONORO" class="logo-header">
+
+            <div class="campo-config">
+                <label>Estilo de Resposta (Fixo):</label>
+                <select id="config-tipo-resposta">
+                    <option value="digitar" selected>Digitar</option>
+                    <option value="marcar">Marcar (5 opções)</option>
+                </select>
+            </div>
 
             <div class="campo-config">
                 <label>Filtrar por Álbuns, EPs e Singles:</label>
@@ -315,15 +665,24 @@
                     <option value="1">1 Segundo</option>
                     <option value="2" selected>2 Segundos</option>
                     <option value="3">3 Segundos</option>
+                    <option value="4">4 Segundos</option>
+                    <option value="5">5 Segundos</option>
+                    <option value="6">6 Segundos</option>
+                    <option value="7">7 Segundos</option>
+                    <option value="8">8 Segundos</option>
+                    <option value="9">9 Segundos</option>
+                    <option value="10">10 Segundos</option>
+                    <option value="ajustavel">Ajustável (como no Modo Clássico)</option>
                 </select>
             </div>
 
-            <div class="campo-config">
+            <div class="campo-config" id="container-config-tempo">
                 <label>Duração para responder (segundos)</label>
                 <select id="config-tempo">
                     <option value="10">10 Segundos</option>
                     <option value="15" selected>15 Segundos</option>
                     <option value="20">20 Segundos</option>
+                    <option value="30">30 Segundos</option>
                 </select>
             </div>
 
@@ -342,53 +701,66 @@
         <!-- TELA 3: JOGO -->
         <div id="tela-jogo" class="tela">
             <div style="text-align: left;">
-                <button onclick="sairDaPartida()" class="btn-voltar-topo">⬅️ MENU</button>
+                <button onclick="sairDaPartida()" class="btn-voltar-topo">← MENU</button>
             </div>
 
             <div class="status-bar">
                 <span>Rodada: <span id="rodada-atual">1</span>/<span id="rodada-total">10</span></span>
-                <span>Score: <span id="score-total" class="pontos-gradiente">0</span></span>
+                <span>Pontos: <span id="score-total" class="pontos-gradiente">0</span></span>
             </div>
 
-            <div class="tempo-container">
+            <div class="tempo-container" id="container-barra-tempo">
                 <div id="barra-tempo" class="tempo-barra"></div>
             </div>
             <div id="texto-tempo" class="tempo-texto">00.000s</div>
 
-            <div id="controles-audio">
-                <div id="painel-seletor" class="seletor-segundos" style="display:none;">
-                    <button type="button" onclick="alterarSegundos(-1)" class="btn-secundario" id="btn-menos">-1s</button>
-                    <span class="seletor-display"><span id="txt-segundos-selecionados">1</span>s</span>
-                    <button type="button" onclick="alterarSegundos(1)" class="btn-secundario" id="btn-mais">+1s</button>
+            <!-- PLAYER MINIMALISTA -->
+            <div class="player-minimalista">
+                <div id="visualizador-ondas" class="visualizador-ondas"></div>
+
+                <div class="linha-trecho-container">
+                    <div id="linha-trecho-progresso" class="linha-trecho-progresso"></div>
                 </div>
 
-                <button id="btn-tocar" onclick="tocarTrecho()">▶️ TOCAR TRECHO</button>
+                <div class="controles-minimalistas">
+                    <button type="button" class="btn-mini-step" id="btn-menos" onclick="alterarSegundos(-1)">-</button>
+                    
+                    <button type="button" class="btn-mini-play" id="btn-tocar" onclick="tocarTrecho()">
+                        <span id="icone-play">⏵</span> PLAY (<span id="txt-segundos-selecionados">1</span>s)
+                    </button>
+
+                    <button type="button" class="btn-mini-step" id="btn-mais" onclick="alterarSegundos(1)">+</button>
+                </div>
             </div>
 
-            <form onsubmit="conferir(event)" style="margin-top: 10px;">
-                <input type="text" id="resposta" list="lista-musicas" placeholder="Qual é a música?" autocomplete="off" disabled>
+            <!-- MODO DIGITAR -->
+            <form id="form-digitar" onsubmit="conferir(event)" style="margin-top: 10px;">
+                <input type="text" id="resposta" list="lista-musicas" placeholder="Qual é a música?" autocomplete="off">
                 <datalist id="lista-musicas"></datalist>
-                <button type="submit" id="btn-enviar" disabled class="btn-secundario" style="margin-top: 10px;">ENVIAR (ENTER)</button>
+                <button type="submit" id="btn-enviar" class="btn-secundario" style="margin-top: 10px;">ENVIAR (ENTER)</button>
             </form>
+
+            <!-- MODO MARCAR (OPÇÕES) -->
+            <div id="container-marcar" style="display: none;" class="grid-opcoes-musica"></div>
 
             <div id="resultado"></div>
             
             <div id="painel-pos-resposta" style="display: none; margin-top: 15px;">
                 <div style="display: flex; gap: 8px;">
-                    <button onclick="ouvirAudio('trecho')" class="btn-secundario" style="font-size: 12px;">🔊 OUVIR TRECHO</button>
-                    <button onclick="ouvirAudio('musica')" class="btn-secundario" style="font-size: 12px;">🎵 OUVIR MÚSICA (30s)</button>
+                    <button onclick="ouvirAudio('trecho')" class="btn-secundario" style="font-size: 12px;">OUVIR TRECHO</button>
+                    <button onclick="ouvirAudio('musica')" class="btn-secundario" style="font-size: 12px;">OUVIR MÚSICA (30s)</button>
                 </div>
-                <button id="btn-proximo" onclick="proximaAcao()" style="background: #1db954; color: #fff; margin-top: 5px;">PRÓXIMA MÚSICA ➔</button>
+                <button id="btn-proximo" onclick="proximaAcao()" style="background: #ff0055; color: #fff; margin-top: 5px;">PRÓXIMA MÚSICA ➔</button>
             </div>
         </div>
 
-        <!-- TELA 4: REPORT FINAL -->
+        <!-- TELA 4: RELATÓRIO FINAL -->
         <div id="tela-fim" class="tela">
             <div style="text-align: left;">
-                <button onclick="voltarAoMenu()" class="btn-voltar-topo">⬅️ VOLTAR</button>
+                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">← MENU</button>
             </div>
-            <h1>ESTATÍSTICAS</h1>
-            <p style="margin-bottom: 15px;">Resumo da sua performance:</p>
+            <img src="1.png" alt="SONORO" class="logo-header">
+            <p style="margin-bottom: 15px;">Resumo do seu desempenho:</p>
 
             <div class="grid-stats">
                 <div class="card-stat">
@@ -416,15 +788,59 @@
         </div>
     </div>
 
-    <audio id="player"></audio>
+    <audio id="player" crossOrigin="anonymous"></audio>
 
     <script>
+        function toggleHelpTooltip(el, e) {
+            e.stopPropagation();
+            const estaAtivo = el.classList.contains('ativo');
+            document.querySelectorAll('.btn-help-info').forEach(b => b.classList.remove('ativo'));
+            if (!estaAtivo) {
+                el.classList.add('ativo');
+            }
+        }
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.btn-help-info').forEach(b => b.classList.remove('ativo'));
+        });
+
+        function construirBarrasOndas() {
+            const container = document.getElementById("visualizador-ondas");
+            if (!container) return;
+            container.innerHTML = "";
+            for (let i = 0; i < 25; i++) {
+                const barra = document.createElement("div");
+                barra.className = "barra-onda";
+                container.appendChild(barra);
+            }
+        }
+        construirBarrasOndas();
+
+        function iniciarFluxoJogo() {
+            const splash = document.getElementById('splash-screen');
+            if (splash) splash.style.display = 'none';
+            mostrarTela('tela-inicio');
+        }
+
+        function abrirTelaComoJogar() {
+            const splash = document.getElementById('splash-screen');
+            if (splash) splash.style.display = 'none';
+            mostrarTela('tela-como-jogar');
+        }
+
+        function voltarParaSplash() {
+            const splash = document.getElementById('splash-screen');
+            if (splash) splash.style.display = 'flex';
+        }
+
         let artistaIdAtual = "6043160";
         let bancoDeMusicas = [];
         let albunsDisponiveis = [];
         let filaDeMusicas = [];
         let musicaAtual;
-        let modoJogo = 'classico';
+        let modoJogo = 'classico'; // 'classico', 'custom', 'zen'
+        let tipoResposta = 'digitar'; // 'digitar', 'marcar'
+        let trechoAjustavel = false;
         
         let score = 0;
         let rodadaAtual = 0;
@@ -438,12 +854,75 @@
         let tempoInicio = 0;
         let loopTempo = null;
         let timeoutAudio = null;
+        let loopProgressoTrecho = null;
         let rodadaAtiva = false;
+        let jaTocouPrimeiraVez = false;
         
         let pontosBonusClassico = 500;
         let historicoGeral = [];
 
         const player = document.getElementById("player");
+
+        let audioCtx = null;
+        let analyser = null;
+        let sourceNode = null;
+        let animFrameOndas = null;
+
+        function inicializarAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContextClass();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 64; 
+                sourceNode = audioCtx.createMediaElementSource(player);
+                sourceNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function renderizarOndasReais() {
+            if (!analyser) return;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(dataArray);
+
+            const barras = document.querySelectorAll('.barra-onda');
+            const totalBarras = barras.length;
+
+            for (let i = 0; i < totalBarras; i++) {
+                let indexData = Math.floor((i + 1) * (bufferLength / (totalBarras + 1)));
+                let val = dataArray[indexData] || 0;
+                
+                let alturaCalculada = Math.max(6, Math.floor((val / 255) * 44));
+                if (barras[i]) barras[i].style.height = `${alturaCalculada}px`;
+            }
+
+            animFrameOndas = requestAnimationFrame(renderizarOndasReais);
+        }
+
+        function iniciarAnimacaoOndas() {
+            try {
+                inicializarAudioContext();
+            } catch(e) {
+                console.log("AudioContext fallback ativo");
+            }
+            document.getElementById("visualizador-ondas").classList.add("ativo");
+            document.getElementById("icone-play").innerText = "⏸";
+            renderizarOndasReais();
+        }
+
+        function pararAnimacaoOndas() {
+            if (animFrameOndas) cancelAnimationFrame(animFrameOndas);
+            document.getElementById("visualizador-ondas").classList.remove("ativo");
+            document.getElementById("icone-play").innerText = "⏵";
+            document.getElementById("linha-trecho-progresso").style.width = "0%";
+
+            const barras = document.querySelectorAll('.barra-onda');
+            barras.forEach(b => b.style.height = "6px");
+        }
 
         let listaArtistasPadrão = [
             { id: "6043160", nome: "Kali Uchis" },
@@ -463,17 +942,19 @@
             document.getElementById(idTela).classList.add('ativa');
         }
 
-        function voltarAoMenu() {
+        function voltarAoMenuArtistas() {
             if (loopTempo) cancelAnimationFrame(loopTempo);
             if (timeoutAudio) clearTimeout(timeoutAudio);
+            if (loopProgressoTrecho) cancelAnimationFrame(loopProgressoTrecho);
             player.pause();
+            pararAnimacaoOndas();
             rodadaAtiva = false;
             mostrarTela('tela-inicio');
         }
 
         function sairDaPartida() {
             if (!confirm("Sair da partida atual? O progresso desta partida será perdido.")) return;
-            voltarAoMenu();
+            voltarAoMenuArtistas();
         }
 
         function jogarNovamente() {
@@ -549,6 +1030,7 @@
             const txtModal = document.getElementById("modal-loading-txt");
             const btnClassico = document.getElementById("btn-modal-classico");
             const btnCustom = document.getElementById("btn-modal-custom");
+            const btnZen = document.getElementById("btn-modal-zen");
             const modalPainelCarga = document.getElementById("modal-painel-carregamento");
 
             if (cacheObj.status === 'concluido') {
@@ -556,6 +1038,7 @@
                 if (txtModal) txtModal.innerText = "Faixas prontas!";
                 if (btnClassico) btnClassico.disabled = false;
                 if (btnCustom) btnCustom.disabled = false;
+                if (btnZen) btnZen.disabled = false;
                 setTimeout(() => {
                     if (artistaIdAtual === idArtista && catalogosCache[idArtista].status === 'concluido') {
                         if (modalPainelCarga) modalPainelCarga.style.display = "none";
@@ -567,6 +1050,7 @@
                 if (txtModal) txtModal.innerText = "Carregando faixas...";
                 if (btnClassico) btnClassico.disabled = true;
                 if (btnCustom) btnCustom.disabled = true;
+                if (btnZen) btnZen.disabled = true;
             }
         }
 
@@ -767,14 +1251,14 @@
             const cardEPs = document.createElement("div");
             cardEPs.className = "card-clicavel card-especial";
             cardEPs.id = "grupo-ep";
-            cardEPs.innerHTML = `<span class="nome-card-central">📀<br>EPs</span>`;
+            cardEPs.innerHTML = `<span class="nome-card-central">EPs</span>`;
             cardEPs.onclick = () => cardEPs.classList.toggle("inativo");
             containerFiltro.appendChild(cardEPs);
 
             const cardSingles = document.createElement("div");
             cardSingles.className = "card-clicavel card-especial";
             cardSingles.id = "grupo-single";
-            cardSingles.innerHTML = `<span class="nome-card-central">💿<br>Singles</span>`;
+            cardSingles.innerHTML = `<span class="nome-card-central">Singles</span>`;
             cardSingles.onclick = () => cardSingles.classList.toggle("inativo");
             containerFiltro.appendChild(cardSingles);
 
@@ -852,6 +1336,78 @@
             renderizarGridArtistas(termo);
         }
 
+        let debounceTimer;
+        async function buscarSugestoesArtista(query) {
+            clearTimeout(debounceTimer);
+            const container = document.getElementById("autocomplete-artistas");
+            if (!query || query.trim().length < 2 || /^\d+$/.test(query.trim())) {
+                container.style.display = "none";
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                let res = await buscarDeezer(`https://api.deezer.com/search/artist?q=${encodeURIComponent(query)}&limit=6`);
+                if (res && res.data && res.data.length > 0) {
+                    container.innerHTML = "";
+                    res.data.forEach(art => {
+                        const item = document.createElement("div");
+                        item.className = "autocomplete-item";
+                        item.innerHTML = `
+                            <img src="${art.picture_small || art.picture_medium}" alt="${art.name}">
+                            <span>${art.name}</span>
+                        `;
+                        item.onclick = (e) => {
+                            e.stopPropagation();
+                            container.style.display = "none";
+                            document.getElementById("input-deezer-id").value = "";
+                            adicionarArtistaDiretoPeloObjeto(art);
+                        };
+                        container.appendChild(item);
+                    });
+                    container.style.display = "block";
+                } else {
+                    container.style.display = "none";
+                }
+            }, 300);
+        }
+
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById("autocomplete-artistas");
+            if (container && !e.target.closest('.add-deezer-box')) {
+                container.style.display = "none";
+            }
+        });
+
+        async function adicionarArtistaDiretoPeloObjeto(artObj) {
+            const idStr = String(artObj.id);
+            const nomeStr = artObj.name;
+
+            const jaExiste = listaArtistasPadrão.find(a => String(a.id) === idStr);
+            if (jaExiste) {
+                abrirModalArtista(jaExiste.id, jaExiste.nome);
+                return;
+            }
+
+            const novo = {
+                id: idStr,
+                nome: nomeStr,
+                foto: artObj.picture_medium || artObj.picture || artObj.picture_small
+            };
+
+            listaArtistasPadrão.unshift(novo);
+
+            const seletor = document.getElementById("seletor-artista");
+            const opt = document.createElement("option");
+            opt.value = idStr;
+            opt.innerText = nomeStr;
+            seletor.appendChild(opt);
+
+            document.getElementById("input-busca-catalogo").value = "";
+            await renderizarGridArtistas();
+
+            abrirModalArtista(idStr, nomeStr);
+        }
+
         async function adicionarArtistaDeezer() {
             const input = document.getElementById("input-deezer-id");
             const btn = document.getElementById("btn-add-artista");
@@ -879,38 +1435,8 @@
                 }
 
                 if (artistaEncontrado && artistaEncontrado.id) {
-                    const idStr = String(artistaEncontrado.id);
-                    const nomeStr = artistaEncontrado.name;
-
-                    const jaExiste = listaArtistasPadrão.find(a => String(a.id) === idStr || a.nome.toLowerCase() === nomeStr.toLowerCase());
-                    
-                    if (jaExiste) {
-                        alert(`O artista "${jaExiste.nome}" já está na lista!`);
-                        input.value = "";
-                        btn.disabled = false;
-                        btn.innerText = "Adicionar";
-                        return;
-                    }
-
-                    const novo = {
-                        id: idStr,
-                        nome: nomeStr,
-                        foto: artistaEncontrado.picture_medium || artistaEncontrado.picture
-                    };
-
-                    listaArtistasPadrão.unshift(novo);
-
-                    const seletor = document.getElementById("seletor-artista");
-                    const opt = document.createElement("option");
-                    opt.value = idStr;
-                    opt.innerText = nomeStr;
-                    seletor.appendChild(opt);
-
-                    document.getElementById("input-busca-catalogo").value = "";
-                    await renderizarGridArtistas();
-
                     input.value = "";
-                    abrirModalArtista(idStr, nomeStr);
+                    await adicionarArtistaDiretoPeloObjeto(artistaEncontrado);
                 } else {
                     alert("Nenhum artista encontrado com essa busca.");
                 }
@@ -934,20 +1460,37 @@
             document.getElementById("modal-modo").classList.remove("ativo");
         }
 
-        function confirmarModo(modo) {
-            fecharModalModo();
-            selecionarModo(modo);
+        function fecharModalEstiloResposta() {
+            document.getElementById("modal-estilo-resposta").classList.remove("ativo");
         }
 
-        function selecionarModo(modo) {
+        function confirmarModo(modo) {
+            fecharModalModo();
             modoJogo = modo;
-            if (modo === 'classico') {
+            
+            if (modo === 'custom') {
+                mostrarTela('tela-config');
+            } else {
+                document.getElementById("modal-estilo-resposta").classList.add("ativo");
+            }
+        }
+
+        function selecionarEstiloEIniciar(estilo) {
+            tipoResposta = estilo;
+            fecharModalEstiloResposta();
+
+            if (modoJogo === 'classico') {
                 tempoTrecho = 1;
+                trechoAjustavel = true;
                 tempoTotal = 30;
                 totalRodadas = 10;
                 iniciarPartida();
-            } else {
-                mostrarTela('tela-config');
+            } else if (modoJogo === 'zen') {
+                tempoTrecho = 30;
+                trechoAjustavel = false;
+                tempoTotal = 0;
+                totalRodadas = 10;
+                iniciarPartida();
             }
         }
 
@@ -955,7 +1498,17 @@
             let acervoAtivo = [...bancoDeMusicas];
 
             if (modoJogo === 'custom') {
-                tempoTrecho = parseInt(document.getElementById("config-trecho").value);
+                tipoResposta = document.getElementById("config-tipo-resposta").value;
+                
+                let valTrecho = document.getElementById("config-trecho").value;
+                if (valTrecho === "ajustavel") {
+                    trechoAjustavel = true;
+                    tempoTrecho = 1;
+                } else {
+                    trechoAjustavel = false;
+                    tempoTrecho = parseInt(valTrecho);
+                }
+
                 tempoTotal = parseInt(document.getElementById("config-tempo").value);
                 totalRodadas = parseInt(document.getElementById("config-rodadas").value);
 
@@ -982,15 +1535,34 @@
                 }
             }
             
-            document.getElementById("rodada-total").innerText = totalRodadas;
             score = 0;
+            document.getElementById("score-total").innerText = score;
+            
+            document.getElementById("rodada-total").innerText = totalRodadas;
             rodadaAtual = 0;
             historicoGeral = [];
             
-            filaDeMusicas = [...acervoAtivo].sort(() => Math.random() - 0.5);
+            // ALTERAÇÃO PARA 100% ALEATÓRIO (Embaralhamento completo do acervo filtrado)
+            filaDeMusicas = [...acervoAtivo].sort(() => Math.random() - 0.5).slice(0, totalRodadas);
 
             prepararRodada();
             mostrarTela('tela-jogo');
+        }
+
+        function aplicarEstiloRespostaPartida() {
+            const formDigitar = document.getElementById("form-digitar");
+            const containerMarcar = document.getElementById("container-marcar");
+
+            if (tipoResposta === 'digitar') {
+                formDigitar.style.display = "block";
+                containerMarcar.style.display = "none";
+            } else {
+                formDigitar.style.display = "none";
+                containerMarcar.style.display = "flex";
+                if (musicaAtual) {
+                    gerareMontarOpcoesMarcar();
+                }
+            }
         }
 
         function prepararRodada() {
@@ -1002,97 +1574,166 @@
 
             if (loopTempo) cancelAnimationFrame(loopTempo);
             if (timeoutAudio) clearTimeout(timeoutAudio);
+            if (loopProgressoTrecho) cancelAnimationFrame(loopProgressoTrecho);
+
             player.pause();
             player.currentTime = 0;
+            pararAnimacaoOndas();
 
             document.getElementById("rodada-atual").innerText = rodadaAtual;
             document.getElementById("resultado").innerText = "";
             document.getElementById("painel-pos-resposta").style.display = "none";
-            document.getElementById("texto-tempo").innerText = `${tempoTotal.toFixed(3)}s`;
-            document.getElementById("barra-tempo").style.width = "100%";
-            document.getElementById("barra-tempo").style.background = "#fff";
-            
+
+            // CONFIGURAÇÕES VISUAIS DO MODO ZEN vs COM TEMPO
+            const containerBarraTempo = document.getElementById("container-barra-tempo");
+            const textoTempo = document.getElementById("texto-tempo");
+
+            if (modoJogo === 'zen') {
+                containerBarraTempo.style.display = "none";
+                textoTempo.style.display = "none";
+            } else {
+                containerBarraTempo.style.display = "block";
+                textoTempo.style.display = "block";
+                textoTempo.innerText = `${tempoTotal.toFixed(3)}s`;
+                document.getElementById("barra-tempo").style.width = "100%";
+                document.getElementById("barra-tempo").style.background = "#fff";
+            }
+
+            document.getElementById("linha-trecho-progresso").style.width = "0%";
             document.getElementById("resposta").value = "";
-            document.getElementById("resposta").disabled = true;
-            document.getElementById("btn-enviar").disabled = true;
+            
+            musicaAtual = filaDeMusicas.pop();
+            inicioAleatorioAudio = Math.floor(Math.random() * 15); 
+
+            // Aplica visualmente a modalidade de resposta fixada
+            aplicarEstiloRespostaPartida();
+
+            // CONTROLES DE TRECHO (+ / -)
+            const btnMenos = document.getElementById("btn-menos");
+            const btnMais = document.getElementById("btn-mais");
+            
+            if (trechoAjustavel) {
+                btnMenos.style.display = "flex";
+                btnMais.style.display = "flex";
+            } else {
+                btnMenos.style.display = "none";
+                btnMais.style.display = "none";
+            }
             
             if (modoJogo === 'classico') {
                 tempoTrecho = 1;
                 segundosTocadosAnteriormente = 1;
                 pontosBonusClassico = 500;
-                document.getElementById("painel-seletor").style.display = "flex";
-                document.getElementById("txt-segundos-selecionados").innerText = "1";
-            } else {
-                document.getElementById("painel-seletor").style.display = "none";
+            } else if (modoJogo === 'zen') {
+                tempoTrecho = 30;
             }
 
-            document.getElementById("btn-tocar").innerText = `▶️ TOCAR TRECHO (${tempoTrecho}s)`;
+            document.getElementById("txt-segundos-selecionados").innerText = tempoTrecho;
+            document.getElementById("icone-play").innerText = "⏵";
             document.getElementById("btn-tocar").disabled = false;
-            
-            musicaAtual = filaDeMusicas.pop();
-            inicioAleatorioAudio = Math.floor(Math.random() * 15); 
-            
+
+            // PREPARA ÁUDIO E PERMITE QUE O JOGADOR RESPONDA ANTES/DURANTE O PLAY
             player.src = musicaAtual.preview;
             player.load();
             
-            rodadaAtiva = false;
+            rodadaAtiva = true;
+            jaTocouPrimeiraVez = false;
+        }
+
+        function gerareMontarOpcoesMarcar() {
+            const containerMarcar = document.getElementById("container-marcar");
+            containerMarcar.innerHTML = "";
+
+            if (!musicaAtual) return;
+
+            let alternativas = [musicaAtual];
+            let outrasMusicas = bancoDeMusicas.filter(m => m.nomeNormalizado !== musicaAtual.nomeNormalizado);
+            outrasMusicas = outrasMusicas.sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < outrasMusicas.length && alternativas.length < 5; i++) {
+                if (!alternativas.some(a => a.nomeNormalizado === outrasMusicas[i].nomeNormalizado)) {
+                    alternativas.push(outrasMusicas[i]);
+                }
+            }
+
+            alternativas = alternativas.sort(() => Math.random() - 0.5);
+
+            alternativas.forEach(item => {
+                const btnOpcao = document.createElement("button");
+                btnOpcao.className = "btn-opcao-marcar";
+                btnOpcao.innerText = item.nomeExibicao;
+                btnOpcao.onclick = () => conferirMarcar(item.nomeNormalizado);
+                containerMarcar.appendChild(btnOpcao);
+            });
         }
 
         function alterarSegundos(delta) {
+            if (!trechoAjustavel) return;
             let novoVal = tempoTrecho + delta;
-            if (novoVal >= 1 && novoVal <= 5) {
+            if (novoVal >= 1 && novoVal <= 10) {
                 tempoTrecho = novoVal;
                 document.getElementById("txt-segundos-selecionados").innerText = tempoTrecho;
-                document.getElementById("btn-tocar").innerText = `▶️ TOCAR TRECHO (${tempoTrecho}s)`;
             }
         }
 
         async function tocarTrecho() {
-            if (modoJogo === 'classico') {
-                if (rodadaAtiva) {
-                    pontosBonusClassico = Math.max(0, pontosBonusClassico - 20);
-                    cancelAnimationFrame(loopTempo);
-                }
+            if (modoJogo === 'classico' && trechoAjustavel) {
                 if (tempoTrecho > segundosTocadosAnteriormente) {
                     let diff = tempoTrecho - segundosTocadosAnteriormente;
-                    pontosBonusClassico = Math.max(0, pontosBonusClassico - (diff * 100));
+                    pontosBonusClassico = Math.max(0, pontosBonusClassico - (diff * 50));
                     segundosTocadosAnteriormente = tempoTrecho;
                 }
             }
 
             document.getElementById("btn-tocar").disabled = true;
-            document.getElementById("btn-tocar").innerText = "OUVINDO...";
             
             try {
+                if (timeoutAudio) clearTimeout(timeoutAudio);
+                if (loopProgressoTrecho) cancelAnimationFrame(loopProgressoTrecho);
+
+                // Evita que o áudio corte ou carregue no local errado
+                player.pause();
                 player.currentTime = inicioAleatorioAudio;
+                
                 await player.play();
+                iniciarAnimacaoOndas();
+
+                let inicioTrechoPerf = performance.now();
+                let duracaoTrechoMs = tempoTrecho * 1000;
+
+                function atualizarProgressoLinha(now) {
+                    let decorrido = now - inicioTrechoPerf;
+                    let pct = Math.min(100, (decorrido / duracaoTrechoMs) * 100);
+                    document.getElementById("linha-trecho-progresso").style.width = `${pct}%`;
+
+                    if (decorrido < duracaoTrechoMs && !player.paused) {
+                        loopProgressoTrecho = requestAnimationFrame(atualizarProgressoLinha);
+                    }
+                }
+                loopProgressoTrecho = requestAnimationFrame(atualizarProgressoLinha);
 
                 timeoutAudio = setTimeout(() => { 
                     player.pause();
-                    document.getElementById("btn-tocar").innerText = `🔊 REOUVIR TRECHO (${tempoTrecho}s)`;
+                    pararAnimacaoOndas();
                     document.getElementById("btn-tocar").disabled = false;
-                    
-                    if (!rodadaAtiva) {
-                        rodadaAtiva = true;
-                        document.getElementById("resposta").disabled = false;
-                        document.getElementById("btn-enviar").disabled = false;
-                        document.getElementById("resposta").focus();
-                        tempoInicio = performance.now();
-                    } else {
-                        tempoInicio = performance.now() - ((tempoTotal - tempoRestante) * 1000);
+
+                    if (!jaTocouPrimeiraVez) {
+                        jaTocouPrimeiraVez = true;
+                        if (modoJogo !== 'zen' && rodadaAtiva) {
+                            tempoInicio = performance.now();
+                            loopTempo = requestAnimationFrame(atualizarTempo);
+                        }
                     }
-                    
-                    loopTempo = requestAnimationFrame(atualizarTempo);
-                }, tempoTrecho * 1000);
+                }, duracaoTrechoMs);
             } catch (e) {
                 console.error("Erro na reprodução:", e);
                 document.getElementById("btn-tocar").disabled = false;
-                document.getElementById("btn-tocar").innerText = `▶️ TOCAR TRECHO (${tempoTrecho}s)`;
+                pararAnimacaoOndas();
             }
         }
 
         function atualizarTempo(timestamp) {
-            if (!rodadaAtiva) return;
+            if (!rodadaAtiva || modoJogo === 'zen' || !jaTocouPrimeiraVez) return;
 
             let decorrido = (timestamp - tempoInicio) / 1000;
             tempoRestante = Math.max(0, tempoTotal - decorrido);
@@ -1109,34 +1750,45 @@
             if (tempoRestante > 0) {
                 loopTempo = requestAnimationFrame(atualizarTempo);
             } else {
-                encerrarRodada(false, "⏰ Tempo esgotado!", 'tempo');
+                encerrarRodada(false, "Tempo esgotado!", 'tempo');
             }
         }
 
         function conferir(event) {
-            event.preventDefault();
+            if (event) event.preventDefault();
             if (!rodadaAtiva) return;
 
             let chuteEntrada = document.getElementById("resposta").value;
             let chuteNormalizado = normalizarNome(chuteEntrada);
 
-            if (chuteNormalizado === musicaAtual.nomeNormalizado) {
+            processarResposta(chuteNormalizado === musicaAtual.nomeNormalizado);
+        }
+
+        function conferirMarcar(nomeNormalizadoOpcao) {
+            if (!rodadaAtiva) return;
+            processarResposta(nomeNormalizadoOpcao === musicaAtual.nomeNormalizado);
+        }
+
+        function processarResposta(acertou) {
+            if (acertou) {
                 let pontosGanhos = 0;
 
                 if (modoJogo === 'classico') {
-                    let pontosTempo = Math.floor((tempoRestante / tempoTotal) * 500);
+                    let pontosTempo = jaTocouPrimeiraVez ? Math.floor((tempoRestante / tempoTotal) * 500) : 500;
                     pontosGanhos = pontosTempo + pontosBonusClassico;
+                } else if (modoJogo === 'zen') {
+                    pontosGanhos = 100;
                 } else {
-                    let proporcao = tempoRestante / tempoTotal;
+                    let proporcao = jaTocouPrimeiraVez ? (tempoRestante / tempoTotal) : 1;
                     pontosGanhos = Math.floor(500 + (proporcao * 500));
                 }
 
                 score += pontosGanhos;
                 document.getElementById("score-total").innerText = score;
                 
-                encerrarRodada(true, `🎉 +${pontosGanhos} pts!`);
+                encerrarRodada(true, `+${pontosGanhos} pts!`);
             } else {
-                encerrarRodada(false, `❌ Resposta incorreta!`, 'erro');
+                encerrarRodada(false, `Resposta incorreta!`, 'erro');
             }
         }
 
@@ -1144,27 +1796,35 @@
             rodadaAtiva = false;
             if (loopTempo) cancelAnimationFrame(loopTempo);
             if (timeoutAudio) clearTimeout(timeoutAudio);
+            if (loopProgressoTrecho) cancelAnimationFrame(loopProgressoTrecho);
             player.pause();
+            pararAnimacaoOndas();
 
-            let tempoGasto = tempoTotal - tempoRestante;
+            let tempoGasto = 0;
+            if (modoJogo === 'zen') {
+                tempoGasto = (performance.now() - tempoInicio) / 1000;
+            } else if (jaTocouPrimeiraVez) {
+                tempoGasto = tempoTotal - tempoRestante;
+            }
+
             historicoGeral.push({ musica: musicaAtual, acertou: acertou, tempo: tempoGasto, motivo: motivo });
 
             let divResultado = document.getElementById("resultado");
             divResultado.innerHTML = `${mensagem} <br><span class="nome-revelado">Música: ${musicaAtual.nomeExibicao}</span>`;
             divResultado.style.color = acertou ? "#1db954" : "#ff4d4d";
 
-            document.getElementById("resposta").disabled = true;
-            document.getElementById("btn-enviar").disabled = true;
+            const btnsMarcar = document.querySelectorAll(".btn-opcao-marcar");
+            btnsMarcar.forEach(b => b.disabled = true);
+
             document.getElementById("btn-tocar").disabled = true;
-            document.getElementById("painel-seletor").style.display = "none";
             
             const btnProximo = document.getElementById("btn-proximo");
             if (rodadaAtual === totalRodadas || filaDeMusicas.length === 0) {
-                btnProximo.innerText = "VER ESTATÍSTICAS 📊";
-                btnProximo.style.background = "#e52e71";
+                btnProximo.innerText = "VER ESTATÍSTICAS";
+                btnProximo.style.background = "#ff0055";
             } else {
                 btnProximo.innerText = "PRÓXIMA MÚSICA ➔";
-                btnProximo.style.background = "#1db954";
+                btnProximo.style.background = "#ff0055";
             }
 
             document.getElementById("painel-pos-resposta").style.display = "block";
@@ -1176,18 +1836,26 @@
 
         function ouvirAudio(tipo) {
             if (timeoutAudio) clearTimeout(timeoutAudio);
+            if (loopProgressoTrecho) cancelAnimationFrame(loopProgressoTrecho);
+            
             player.currentTime = inicioAleatorioAudio; 
             player.play();
+            iniciarAnimacaoOndas();
 
             if (tipo === 'trecho') {
-                timeoutAudio = setTimeout(() => { player.pause(); }, tempoTrecho * 1000);
+                timeoutAudio = setTimeout(() => { 
+                    player.pause(); 
+                    pararAnimacaoOndas();
+                }, tempoTrecho * 1000);
             }
         }
 
         function exibirEstatisticas() {
             if (timeoutAudio) clearTimeout(timeoutAudio);
+            if (loopProgressoTrecho) cancelAnimationFrame(loopProgressoTrecho);
             player.pause();
             player.currentTime = 0;
+            pararAnimacaoOndas();
 
             const acertos = historicoGeral.filter(h => h.acertou);
 
@@ -1217,7 +1885,7 @@
                     <div class="info-track">
                         <div class="title">${index + 1}. ${item.musica.nomeExibicao}</div>
                         <div class="status ${item.acertou ? 'status-acerto' : 'status-erro'}">
-                            ${item.acertou ? `✓ Acertou em ${item.tempo.toFixed(1)}s` : (item.motivo === 'tempo' ? '⏰ Tempo esgotado' : '✕ Resposta errada')}
+                            ${item.acertou ? `Acertou em ${item.tempo.toFixed(1)}s` : (item.motivo === 'tempo' ? 'Tempo esgotado' : 'Resposta errada')}
                         </div>
                     </div>
                 `;
