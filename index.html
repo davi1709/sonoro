@@ -60,7 +60,7 @@
 
             <!-- Exemplo de hihihihihihi-->
             <div class="trofeu-animado">
-                <button onclick="abrirTelaRanking('digitar')" style="background: transparent; border: none; cursor: pointer; padding: 0;" title="Ranking Global">
+                <button onclick="abrirTelaRanking(typeof tipoResposta !== 'undefined' ? tipoResposta : 'digitar')" style="background: transparent; border: none; cursor: pointer; padding: 0;" title="Ranking Global">
                     <img src="assets/icone-trofeu.png" alt="Troféu" style="width: 28px; height: 28px; display: block;">
                 </button>
             </div>
@@ -300,7 +300,7 @@
 
             <!-- BOTÃO DE TROFÉU NO CANTO SUPERIOR DIREITO -->
             <div style="position: absolute; top: 20px; right: 20px;">
-                <button onclick="abrirTelaRanking()" style="background: transparent; border: none; cursor: pointer;" title="Ranking Global">
+                <button onclick="abrirTelaRanking(typeof tipoResposta !== 'undefined' ? tipoResposta : 'digitar')" style="background: transparent; border: none; cursor: pointer; padding: 0;" title="Ranking Global">
                     <img src="assets/icone-trofeu.png" alt="Troféu" style="width: 24px; height: 24px; vertical-align: middle;">
                 </button>
             </div>
