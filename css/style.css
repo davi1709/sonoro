@@ -496,3 +496,16 @@ select:focus, input[type="text"]:focus { border-color: #666; }
     .visualizador-ondas { gap: 2px; }
     .barra-onda { width: 3px; }
 }
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.trofeu-animado {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    animation: fadeIn 1s ease-in-out forwards;
+}
