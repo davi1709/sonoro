@@ -11,6 +11,7 @@ function confirmarModo(modo) {
 
 function selecionarEstiloEIniciar(estilo) {
     tipoResposta = estilo;
+    modoRankingAtual = estilo;
     fecharModalEstiloResposta();
 
     if (modoJogo === 'classico') {
@@ -33,6 +34,7 @@ function iniciarPartida() {
 
     if (modoJogo === 'custom') {
         tipoResposta = document.getElementById("config-tipo-resposta").value;
+        modoRankingAtual = tipoResposta;
         
         let valTrecho = document.getElementById("config-trecho").value;
         if (valTrecho === "ajustavel") {
