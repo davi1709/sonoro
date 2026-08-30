@@ -369,6 +369,9 @@ function exibirEstatisticas() {
     player.currentTime = 0;
     pararAnimacaoOndas();
 
+    // SALVA A PONTUAÇÃO FINAL GLOBALMENTE PARA O RANKING
+    scoreFinalPartida = Number(score) || 0;
+
     const acertos = historicoGeral.filter(h => h.acertou);
 
     document.getElementById("stat-score").innerText = score;
