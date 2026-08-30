@@ -8,6 +8,10 @@
     <link rel="icon" href="assets/favicon.png" sizes="64x64" type="image/png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon.png">
     <link rel="stylesheet" href="css/style.css">
+    <!-- Firebase App (Core) SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <!-- Firebase Firestore SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -53,7 +57,14 @@
         <!-- TELA 1: SELEÇÃO DE ARTISTA -->
         <div id="tela-inicio" class="tela">
             <img src="assets/1.png" alt="SONORO" class="logo-header">
-            
+
+            <!-- Exemplo de hihihihihihi-->
+            <div class="trofeu-animado">
+                <button onclick="abrirTelaRanking('digitar')" style="background: transparent; border: none; cursor: pointer; padding: 0;" title="Ranking Global">
+                    <img src="assets/icone-trofeu.png" alt="Troféu" style="width: 28px; height: 28px; display: block;">
+                </button>
+            </div>
+
             <div class="campo-config">
                 <label>Adicionar Novo Artista (Nome ou ID Deezer):</label>
                 <div class="add-deezer-box">
@@ -256,6 +267,8 @@
         </div>
 
         <!-- TELA 4: RELATÓRIO FINAL -->
+         
+        <!-- TELA 4: RELATÓRIO FINAL -->
         <div id="tela-fim" class="tela">
             <div style="text-align: left;">
                 <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">← MENU</button>
@@ -285,11 +298,76 @@
             <div style="text-align: left; font-size: 12px; color: #888; margin-bottom: 6px;">Histórico da Partida:</div>
             <div class="historico-container" id="stat-historico-lista"></div>
 
-            <button onclick="jogarNovamente()">JOGAR NOVAMENTE</button>
+            <!-- BOTÃO DE TROFÉU NO CANTO SUPERIOR DIREITO -->
+            <div style="position: absolute; top: 20px; right: 20px;">
+                <button onclick="abrirTelaRanking()" style="background: transparent; border: none; cursor: pointer;" title="Ranking Global">
+                    <img src="assets/icone-trofeu.png" alt="Troféu" style="width: 24px; height: 24px; vertical-align: middle;">
+                </button>
+            </div>
+
+            <!-- BOTÃO DE ENVIAR PARA O RANKING -->
+            <div style="margin-top: 15px;">
+                <button type="button" class="btn-modo-classico" onclick="abrirModalSubmeterRanking()" style="width: 100%; margin: 0;">ENVIAR PONTUAÇÃO AO RANKING</button>
+            </div>
+
+            <button onclick="jogarNovamente()" style="margin-top: 15px;">JOGAR NOVAMENTE</button>
+        </div>
+
+        <!--TELA RANKING-->
+        <!-- TELA DE RANKING -->
+        <div id="tela-ranking" class="tela">
+            <div style="text-align: left;">
+                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">← MENU</button>
+            </div>
+            <img src="assets/1.png" alt="SONORO" class="logo-header">
+            <h2 style="color: #ff0055; margin-bottom: 10px; font-size: 18px;">RANKING GLOBAL - MODO CLÁSSICO</h2>
+            
+            <!-- Botões para alternar entre os rankings -->
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
+                <button id="tab-ranking-digitar" onclick="abrirTelaRanking('digitar')" class="btn-secundario" style="font-size: 12px; padding: 8px 12px; margin: 0;">Modo Digitar</button>
+                <button id="tab-ranking-marcar" onclick="abrirTelaRanking('marcar')" class="btn-secundario" style="font-size: 12px; padding: 8px 12px; margin: 0; opacity: 0.5;">Modo Marcar</button>
+            </div>
+
+            <div class="historico-container" id="lista-ranking-global" style="max-height: 280px;">
+                <!-- Os itens do ranking serão injetados aqui via JS -->
+                <p style="text-align: center; color: #888; padding: 20px;">Carregando ranking...</p>
+            </div>
+
+            <button onclick="voltarAoMenuArtistas()" class="btn-secundario" style="margin-top: 15px;">VOLTAR AO MENU</button>
         </div>
     </div>
 
+
     <audio id="player" crossOrigin="anonymous"></audio>
+
+    <!-- MODAL DE SUBMISSÃO AO RANKING (POP-UP) -->
+    <div id="modal-submeter-ranking" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="font-size: 18px; margin-bottom: 10px;">Salvar Pontuação</h2>
+            <p style="margin-bottom: 15px; font-size: 13px;">Insira seu apelido para aparecer no ranking global:</p>
+            
+            <div class="campo-config">
+                <input type="text" id="input-nome-ranking" placeholder="Seu apelido..." maxlength="15" autocomplete="off" style="margin-bottom: 15px;">
+            </div>
+
+            <button class="btn-modo-classico" onclick="enviarScoreFirebase()" style="margin-bottom: 10px;">ENVIAR</button>
+            <button onclick="fecharModalSubmeterRanking()" class="btn-secundario" style="border: none; margin-bottom: 0; color: #888;">VOLTAR</button>
+        </div>
+    </div>
+
+    <script>
+    const firebaseConfig = {
+    apiKey: "AIzaSyCf-uCLKHGGlzwRoaBwlf41zPwW6b-XX9Y",
+    authDomain: "sonoro-2e27e.firebaseapp.com",
+    projectId: "sonoro-2e27e",
+    storageBucket: "sonoro-2e27e.firebasestorage.app",
+    messagingSenderId: "276848704826",
+    appId: "1:276848704826:web:dd245aeda4e5d7cb53e403",
+    measurementId: "G-Q5DDS7VYLF" 
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    </script>
 
     <script src="js/state.js"></script>
     <script src="js/deezer.js"></script>
