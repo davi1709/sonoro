@@ -431,6 +431,15 @@ function exibirEstatisticas() {
         containerHist.appendChild(div);
     });
 
+    const containerEnvioRanking = document.getElementById("container-envio-ranking");
+    if (containerEnvioRanking) {
+        if (modoJogo === 'custom') {
+            containerEnvioRanking.style.display = 'none';
+        } else {
+            containerEnvioRanking.style.display = 'block';
+    }
+}
+
     mostrarTela('tela-fim');
 }
 
