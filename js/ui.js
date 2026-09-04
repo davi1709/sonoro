@@ -1,3 +1,4 @@
+// uiui 😘
 function escapeHtml(text) {
     if (!text) return "";
     return text.replace(/&/g, "&amp;")
@@ -25,7 +26,33 @@ document.addEventListener('click', (e) => {
     if (container && !e.target.closest('.add-deezer-box')) {
         container.style.display = "none";
     }
+    const containerPl = document.getElementById("autocomplete-playlists");
+    if (containerPl && !e.target.closest('.add-deezer-box')) {
+        containerPl.style.display = "none";
+    }
 });
+
+function alternarMenuPrincipal(menu) {
+    tipoMenuAtual = menu;
+    const btnArtistas = document.getElementById("btn-menu-artistas");
+    const btnPlaylists = document.getElementById("btn-menu-playlists");
+    const secaoArtistas = document.getElementById("secao-artistas");
+    const secaoPlaylists = document.getElementById("secao-playlists");
+
+    if (menu === 'artistas') {
+        btnArtistas.className = "btn-modo-classico";
+        btnPlaylists.className = "btn-modo-vazado";
+        secaoArtistas.style.display = "block";
+        secaoPlaylists.style.display = "none";
+        renderizarGridArtistas();
+    } else {
+        btnPlaylists.className = "btn-modo-classico";
+        btnArtistas.className = "btn-modo-vazado";
+        secaoPlaylists.style.display = "block";
+        secaoArtistas.style.display = "none";
+        renderizarGridPlaylists();
+    }
+}
 
 function iniciarFluxoJogo() {
     const splash = document.getElementById('splash-screen');
@@ -73,21 +100,22 @@ function atualizarProgressoGlobalUI() {
     const txtMain = document.getElementById("loading-txt");
     const painelMain = document.getElementById("painel-carregamento");
 
-    let artistasEmAndamento = Object.values(catalogosCache).filter(c => c.status === 'carregando');
+    let cacheAtivoDict = tipoMenuAtual === 'artistas' ? catalogosCache : catalogosPlaylistsCache;
+    let itensEmAndamento = Object.values(cacheAtivoDict).filter(c => c.status === 'carregando');
 
-    if (artistasEmAndamento.length === 0) {
+    if (itensEmAndamento.length === 0) {
         if (barraMain) barraMain.style.width = `100%`;
         if (txtMain) txtMain.innerText = "Faixas prontas!";
         setTimeout(() => {
-            let aindaTem = Object.values(catalogosCache).filter(c => c.status === 'carregando').length;
+            let aindaTem = Object.values(cacheAtivoDict).filter(c => c.status === 'carregando').length;
             if (aindaTem === 0 && painelMain) painelMain.style.display = "none";
         }, 800);
         return;
     }
 
     painelMain.style.display = "block";
-    let soma = artistasEmAndamento.reduce((acc, curr) => acc + curr.progresso, 0);
-    let mediaGlobal = Math.floor(soma / artistasEmAndamento.length);
+    let soma = itensEmAndamento.reduce((acc, curr) => acc + curr.progresso, 0);
+    let mediaGlobal = Math.floor(soma / itensEmAndamento.length);
 
     if (barraMain) barraMain.style.width = `${mediaGlobal}%`;
     if (txtMain) txtMain.innerText = `Carregando faixas...`;
@@ -111,7 +139,39 @@ function atualizarModalUI(idArtista) {
         if (btnCustom) btnCustom.disabled = false;
         if (btnZen) btnZen.disabled = false;
         setTimeout(() => {
-            if (artistaIdAtual === idArtista && catalogosCache[idArtista].status === 'concluido') {
+            if (tipoMenuAtual === 'artistas' && artistaIdAtual === idArtista && catalogosCache[idArtista].status === 'concluido') {
+                if (modalPainelCarga) modalPainelCarga.style.display = "none";
+            }
+        }, 300);
+    } else {
+        if (modalPainelCarga) modalPainelCarga.style.display = "block";
+        if (barraModal) barraModal.style.width = `${cacheObj.progresso}%`;
+        if (txtModal) txtModal.innerText = "Carregando faixas...";
+        if (btnClassico) btnClassico.disabled = true;
+        if (btnCustom) btnCustom.disabled = true;
+        if (btnZen) btnZen.disabled = true;
+    }
+}
+
+function atualizarModalUIPlaylist(idPlaylist) {
+    const cacheObj = catalogosPlaylistsCache[idPlaylist];
+    if (!cacheObj) return;
+
+    const barraModal = document.getElementById("modal-barra-progresso-carga");
+    const txtModal = document.getElementById("modal-loading-txt");
+    const btnClassico = document.getElementById("btn-modal-classico");
+    const btnCustom = document.getElementById("btn-modal-custom");
+    const btnZen = document.getElementById("btn-modal-zen");
+    const modalPainelCarga = document.getElementById("modal-painel-carregamento");
+
+    if (cacheObj.status === 'concluido') {
+        if (barraModal) barraModal.style.width = `100%`;
+        if (txtModal) txtModal.innerText = "Faixas prontas!";
+        if (btnClassico) btnClassico.disabled = false;
+        if (btnCustom) btnCustom.disabled = false;
+        if (btnZen) btnZen.disabled = false;
+        setTimeout(() => {
+            if (tipoMenuAtual === 'playlists' && playlistIdAtual === idPlaylist && catalogosPlaylistsCache[idPlaylist].status === 'concluido') {
                 if (modalPainelCarga) modalPainelCarga.style.display = "none";
             }
         }, 300);
@@ -138,35 +198,42 @@ function atualizarDatalistEAlbuns() {
     const containerFiltro = document.getElementById("lista-albuns-filtro");
     containerFiltro.innerHTML = "";
 
-    const cardEPs = document.createElement("div");
-    cardEPs.className = "card-clicavel card-especial";
-    cardEPs.id = "grupo-ep";
-    cardEPs.innerHTML = `<span class="nome-card-central">EPs</span>`;
-    cardEPs.onclick = () => cardEPs.classList.toggle("inativo");
-    containerFiltro.appendChild(cardEPs);
+    if (tipoMenuAtual === 'artistas') {
+        const cardEPs = document.createElement("div");
+        cardEPs.className = "card-clicavel card-especial";
+        cardEPs.id = "grupo-ep";
+        cardEPs.innerHTML = `<span class="nome-card-central">EPs</span>`;
+        cardEPs.onclick = () => cardEPs.classList.toggle("inativo");
+        containerFiltro.appendChild(cardEPs);
 
-    const cardSingles = document.createElement("div");
-    cardSingles.className = "card-clicavel card-especial";
-    cardSingles.id = "grupo-single";
-    cardSingles.innerHTML = `<span class="nome-card-central">Singles</span>`;
-    cardSingles.onclick = () => cardSingles.classList.toggle("inativo");
-    containerFiltro.appendChild(cardSingles);
+        const cardSingles = document.createElement("div");
+        cardSingles.className = "card-clicavel card-especial";
+        cardSingles.id = "grupo-single";
+        cardSingles.innerHTML = `<span class="nome-card-central">Singles</span>`;
+        cardSingles.onclick = () => cardSingles.classList.toggle("inativo");
+        containerFiltro.appendChild(cardSingles);
 
-    albunsDisponiveis.forEach(alb => {
-        const div = document.createElement("div");
-        div.className = "card-clicavel card-album";
-        div.dataset.ids = alb.idsGrupo.join(',');
-        div.innerHTML = `
-            <img src="${alb.capa || 'https://e-cdns-images.dzcdn.net/images/cover/100x100-000000-80-0-0.jpg'}" alt="${alb.titulo}">
-            <span class="nome-card">${alb.titulo}</span>
-        `;
-        div.onclick = () => div.classList.toggle("inativo");
-        containerFiltro.appendChild(div);
-    });
+        albunsDisponiveis.forEach(alb => {
+            const div = document.createElement("div");
+            div.className = "card-clicavel card-album";
+            div.dataset.ids = alb.idsGrupo.join(',');
+            div.innerHTML = `
+                <img src="${alb.capa || 'https://e-cdns-images.dzcdn.net/images/cover/100x100-000000-80-0-0.jpg'}" alt="${alb.titulo}">
+                <span class="nome-card">${alb.titulo}</span>
+            `;
+            div.onclick = () => div.classList.toggle("inativo");
+            containerFiltro.appendChild(div);
+        });
+    }
 }
 
 function alterarArtista() {
     artistaIdAtual = document.getElementById("seletor-artista").value;
+    carregarCatalogo();
+}
+
+function alterarPlaylist() {
+    playlistIdAtual = document.getElementById("seletor-playlist").value;
     carregarCatalogo();
 }
 
@@ -199,7 +266,7 @@ async function renderizarGridArtistas(filtro = "") {
         card.innerHTML = `
             <div class="thumb-wrapper">
                 <img src="${art.foto || 'https://e-cdns-images.dzcdn.net/images/artist/default/100x100-000000-80-0-0.jpg'}" alt="${art.nome}">
-                <div class="badge-baixado">✓</div>
+                <div class="badge-baixado">&#10003;</div>
                 <div class="overlay-carregando">
                     <div class="mini-barra-bg">
                         <div class="mini-barra-fill" id="mini-fill-${art.id}"></div>
@@ -221,16 +288,86 @@ async function renderizarGridArtistas(filtro = "") {
     }
 }
 
+async function renderizarGridPlaylists(filtro = "") {
+    const grid = document.getElementById("grid-playlists");
+    grid.innerHTML = "";
+
+    const termoFiltro = filtro.toLowerCase().trim();
+
+    listaPlaylistsPadrao.sort((a, b) => b.fas - a.fas);
+
+    for (let pl of listaPlaylistsPadrao) {
+        if (termoFiltro && !pl.titulo.toLowerCase().includes(termoFiltro)) {
+            continue;
+        }
+
+        if (!pl.capa) {
+            try {
+                let res = await buscarDeezer(`https://api.deezer.com/playlist/${pl.id}`);
+                if (res && res.picture_medium) {
+                    pl.capa = res.picture_medium;
+                    if (res.nb_tracks) pl.fas = res.nb_tracks;
+                }
+            } catch (e) {
+                pl.capa = "https://e-cdns-images.dzcdn.net/images/playlist/000000-80-0-0.jpg";
+            }
+        }
+
+        const card = document.createElement("div");
+        card.className = "card-playlist-horizontal";
+        card.id = `card-playlist-${pl.id}`;
+        card.onclick = () => abrirModalPlaylist(pl.id, pl.titulo);
+        card.innerHTML = `
+            <div class="thumb-wrapper-playlist">
+                <img src="${pl.capa || 'https://e-cdns-images.dzcdn.net/images/playlist/000000-80-0-0.jpg'}" alt="${pl.titulo}">
+                <div class="badge-baixado-playlist">&#10003;</div>
+                <div class="overlay-carregando-playlist">
+                    <div class="mini-barra-bg">
+                        <div class="mini-barra-fill" id="mini-fill-playlist-${pl.id}"></div>
+                    </div>
+                </div>
+            </div>
+            <span class="nome-playlist">${pl.titulo}</span>
+        `;
+
+        if (catalogosPlaylistsCache[pl.id]) {
+            if (catalogosPlaylistsCache[pl.id].status === 'carregando') {
+                card.classList.add("carregando");
+            } else if (catalogosPlaylistsCache[pl.id].status === 'concluido') {
+                card.classList.add("baixado");
+            }
+        }
+
+        grid.appendChild(card);
+    }
+}
+
 function filtrarGridArtistas() {
     const termo = document.getElementById("input-busca-catalogo").value;
     renderizarGridArtistas(termo);
 }
 
+function filtrarGridPlaylists() {
+    const termo = document.getElementById("input-busca-catalogo-playlist").value;
+    renderizarGridPlaylists(termo);
+}
+
 function abrirModalArtista(id, nome) {
+    tipoMenuAtual = 'artistas';
     artistaIdAtual = id;
     artistaSelecionadoNome = nome; 
     document.getElementById("seletor-artista").value = id;
     document.getElementById("modal-nome-artista").innerText = nome;
+    document.getElementById("modal-modo").classList.add("ativo");
+    carregarCatalogo();
+}
+
+function abrirModalPlaylist(id, titulo) {
+    tipoMenuAtual = 'playlists';
+    playlistIdAtual = id;
+    artistaSelecionadoNome = titulo; 
+    document.getElementById("seletor-playlist").value = id;
+    document.getElementById("modal-nome-artista").innerText = titulo;
     document.getElementById("modal-modo").classList.add("ativo");
     carregarCatalogo();
 }
@@ -242,10 +379,6 @@ function fecharModalModo() {
 function fecharModalEstiloResposta() {
     document.getElementById("modal-estilo-resposta").classList.remove("ativo");
 }
-
-// ==========================================
-// RANKING E SUBMISSÃO DE PONTUAÇÃO
-// ==========================================
 
 let modoRankingAtual = 'digitar';
 
@@ -288,10 +421,12 @@ async function enviarScoreFirebase() {
         const btnEnviar = document.querySelector("#modal-submeter-ranking .btn-modo-classico");
         if (btnEnviar) btnEnviar.disabled = true;
 
+        let labelSubmissao = tipoMenuAtual === 'playlists' ? `Playlist: ${artistaSelecionadoNome}` : `Artista: ${artistaSelecionadoNome}`;
+
         await db.collection(nomeColecao).add({
             nome: apelido,
             score: Number(scoreFinalPartida),
-            artista: (typeof artistaSelecionadoNome !== 'undefined' ? artistaSelecionadoNome : "Geral"),
+            artista: labelSubmissao,
             data: new Date().toLocaleDateString('pt-BR')
         });
 
@@ -349,7 +484,7 @@ async function abrirTelaRanking(modo = 'digitar') {
                 <div style="font-weight: bold; font-size: 15px; color: #ff0055; width: 30px; text-align: center;">#${posicaoReal}</div>
                 <div class="info-track" style="margin-left: 8px;">
                     <div class="title" style="font-size: 14px;">${escapeHtml(item.nome || "Anônimo")} - <span style="color: #1db954;">${pontuacaoValida}pts</span></div>
-                    <div class="status" style="color: #aaa;">Artista: ${escapeHtml(item.artista || "Desconhecido")} | Feito em: ${item.data || "N/A"}</div>
+                    <div class="status" style="color: #aaa;">${escapeHtml(item.artista || "Desconhecido")} | Feito em: ${item.data || "N/A"}</div>
                 </div>
             `;
             containerRanking.appendChild(div);
