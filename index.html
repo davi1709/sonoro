@@ -36,7 +36,7 @@
         <!-- TELA COMO JOGAR -->
         <div id="tela-como-jogar" class="tela">
             <div style="text-align: left;">
-                <button onclick="voltarParaSplash()" class="btn-voltar-topo">← VOLTAR</button>
+                <button onclick="voltarParaSplash()" class="btn-voltar-topo">&larr; VOLTAR</button>
             </div>
             
             <img src="assets/1.png" alt="SONORO" class="logo-header">
@@ -44,53 +44,86 @@
             <div class="how-to-play-card">
                 <h3>COMO JOGAR</h3>
                 <ul>
-                    <li> <strong>Escolha um Artista:</strong> Selecione o artista entre a lista ou adicione um novo diretamente na barra superior.</li>
+                    <li> <strong>Escolha um Artista ou Playlist:</strong> Selecione o item entre a lista ou adicione um novo diretamente na barra superior.</li>
                     <li> <strong>Ouça o Trecho:</strong> Aperte o play para ouvir uma amostra rápida da música (de 1 a 10 segundos).</li>
                     <li> <strong>Adivinhe Rápido:</strong> Digite o nome da música ou marque uma das opções antes que o tempo acabe!</li>
-                    <li> <strong>Acumule Pontos:</strong> Quanto mais rápido você acertar, menor for o trecho e menos você ouvi-lo maior será sua pontuação. Teste seus conhecimentos musicais!</li>
+                    <li> <strong>Acumule Pontos:</strong> Quanto mais rápido você acertar, menor for el trecho e menos você ouvi-lo maior será sua pontuação. Teste seus conhecimentos musicais!</li>
                 </ul>
             </div>
 
             <button class="btn-jogar-principal" onclick="iniciarFluxoJogo()">JOGAR AGORA</button>
         </div>
 
-        <!-- TELA 1: SELEÇÃO DE ARTISTA -->
+        <!-- TELA 1: SELEÇÃO DE ARTISTA / PLAYLIST -->
         <div id="tela-inicio" class="tela">
             <img src="assets/1.png" alt="SONORO" class="logo-header">
 
-            <!-- Exemplo de hihihihihihi-->
             <div class="trofeu-animado">
                 <button onclick="abrirTelaRanking(typeof tipoResposta !== 'undefined' ? tipoResposta : 'digitar')" style="background: transparent; border: none; cursor: pointer; padding: 0;" title="Ranking Global">
                     <img src="assets/icone-trofeu.png" alt="Troféu" style="width: 28px; height: 28px; display: block;">
                 </button>
             </div>
 
-            <div class="campo-config">
-                <label>Adicionar Novo Artista (Nome ou ID Deezer):</label>
-                <div class="add-deezer-box">
-                    <input type="text" id="input-deezer-id" placeholder="Ex: ABBA, Kali Uchis..." oninput="buscarSugestoesArtista(this.value)" autocomplete="off">
-                    <button type="button" id="btn-add-artista" onclick="adicionarArtistaDeezer()">Adicionar</button>
-                    <div id="autocomplete-artistas" class="autocomplete-list"></div>
+            <!-- MENU ALTERNADOR (ARTISTAS / PLAYLISTS) -->
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; position: relative;">
+                <div style="flex: 1; position: relative; display: flex;">
+                    <button id="btn-menu-artistas" onclick="alternarMenuPrincipal('artistas')" class="btn-modo-classico" style="width: 100%; margin: 0; font-size: 13px; padding: 10px;">ARTISTAS</button>
+                </div>
+                <div style="flex: 1; position: relative; display: flex;">
+                    <span class="etiqueta-novo-badge">NOVO!</span>
+                    <button id="btn-menu-playlists" onclick="alternarMenuPrincipal('playlists')" class="btn-modo-vazado" style="width: 100%; margin: 0; font-size: 13px; padding: 10px;">PLAYLISTS</button>
                 </div>
             </div>
 
-            <select id="seletor-artista" onchange="alterarArtista()" style="display: none;">
-                <option value="6043160">Kali Uchis</option>
-                <option value="380362">Mother Mother</option>
-                <option value="5039338">FKA twigs</option>
-                <option value="399">Radiohead</option>
-                <option value="5518450">Melanie Martinez</option>
-                <option value="9667370">Froid</option>
-                <option value="5578942">Doja Cat</option>
-                <option value="630">Björk</option>
-                <option value="6478881">SOPHIE</option>
-                <option value="14456487">Juice WRLD</option>
-            </select>
+            <!-- SECAO ARTISTAS -->
+            <div id="secao-artistas">
+                <div class="campo-config">
+                    <label>Adicionar Novo Artista (Nome ou ID Deezer):</label>
+                    <div class="add-deezer-box">
+                        <input type="text" id="input-deezer-id" placeholder="Ex: ABBA, Kali Uchis..." oninput="buscarSugestoesArtista(this.value)" autocomplete="off">
+                        <button type="button" id="btn-add-artista" onclick="adicionarArtistaDeezer()">Adicionar</button>
+                        <div id="autocomplete-artistas" class="autocomplete-list"></div>
+                    </div>
+                </div>
 
-            <div class="campo-config">
-                <label>Catálogo de Artistas:</label>
-                <input type="text" id="input-busca-catalogo" placeholder="Buscar no catálogo..." oninput="filtrarGridArtistas()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
-                <div id="grid-artistas" class="grid-artistas"></div>
+                <select id="seletor-artista" onchange="alterarArtista()" style="display: none;">
+                    <option value="6043160">Kali Uchis</option>
+                    <option value="380362">Mother Mother</option>
+                    <option value="5039338">FKA twigs</option>
+                    <option value="399">Radiohead</option>
+                    <option value="5518450">Melanie Martinez</option>
+                    <option value="9667370">Froid</option>
+                    <option value="5578942">Doja Cat</option>
+                    <option value="630">Björk</option>
+                    <option value="6478881">SOPHIE</option>
+                    <option value="14456487">Juice WRLD</option>
+                </select>
+
+                <div class="campo-config">
+                    <label>Catálogo de Artistas:</label>
+                    <input type="text" id="input-busca-catalogo" placeholder="Buscar no catálogo..." oninput="filtrarGridArtistas()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
+                    <div id="grid-artistas" class="grid-artistas"></div>
+                </div>
+            </div>
+
+            <!-- SECAO PLAYLISTS -->
+            <div id="secao-playlists" style="display: none;">
+                <div class="campo-config">
+                    <label>Adicionar Nova Playlist (Nome ou ID Deezer):</label>
+                    <div class="add-deezer-box">
+                        <input type="text" id="input-playlist-id" placeholder="Ex: Top Pop, ID da playlist..." oninput="buscarSugestoesPlaylist(this.value)" autocomplete="off">
+                        <button type="button" id="btn-add-playlist" onclick="adicionarPlaylistDeezer()">Adicionar</button>
+                        <div id="autocomplete-playlists" class="autocomplete-list"></div>
+                    </div>
+                </div>
+
+                <select id="seletor-playlist" onchange="alterarPlaylist()" style="display: none;"></select>
+
+                <div class="campo-config">
+                    <label>Catálogo de Playlists:</label>
+                    <input type="text" id="input-busca-catalogo-playlist" placeholder="Buscar playlist..." oninput="filtrarGridPlaylists()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
+                    <div id="grid-playlists" class="grid-playlists-horizontal"></div>
+                </div>
             </div>
 
             <div id="painel-carregamento" style="display: none;">
@@ -104,7 +137,7 @@
         <!-- MODAL DE SELEÇÃO DE MODO -->
         <div id="modal-modo" class="modal-overlay">
             <div class="modal-content">
-                <h2 id="modal-nome-artista" style="font-size: 20px; margin-bottom: 10px;">Artista</h2>
+                <h2 id="modal-nome-artista" style="font-size: 20px; margin-bottom: 10px;">Artista / Playlist</h2>
                 
                 <div id="modal-painel-carregamento" style="display: none; margin-bottom: 15px;">
                     <div class="loading-container">
@@ -154,19 +187,23 @@
         <!-- TELA 2: CONFIGURAÇÕES (MODO PERSONALIZADO) -->
         <div id="tela-config" class="tela">
             <div style="text-align: left;">
-                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo">← VOLTAR</button>
+                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo">&larr; VOLTAR</button>
             </div>
             <img src="assets/1.png" alt="SONORO" class="logo-header">
 
             <div class="campo-config">
-                <label>Estilo de Resposta (Fixo):</label>
-                <select id="config-tipo-resposta">
+                <label>Estilo de Resposta:</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                    <button type="button" id="btn-custom-digitar" onclick="selecionarEstiloCustom('digitar')" class="btn-modo-classico" style="flex: 1; margin: 0; font-size: 13px; padding: 10px;">DIGITAR</button>
+                    <button type="button" id="btn-custom-marcar" onclick="selecionarEstiloCustom('marcar')" class="btn-modo-vazado" style="flex: 1; margin: 0; font-size: 13px; padding: 10px;">MARCAR</button>
+                </div>
+                <select id="config-tipo-resposta" style="display: none;">
                     <option value="digitar" selected>Digitar</option>
                     <option value="marcar">Marcar (5 opções)</option>
                 </select>
             </div>
 
-            <div class="campo-config">
+            <div class="campo-config" id="container-filtro-albuns-wrapper">
                 <label>Filtrar por Álbuns, EPs e Singles:</label>
                 <div id="lista-albuns-filtro" class="grid-albuns"></div>
             </div>
@@ -213,7 +250,7 @@
         <!-- TELA 3: JOGO -->
         <div id="tela-jogo" class="tela">
             <div style="text-align: left;">
-                <button onclick="sairDaPartida()" class="btn-voltar-topo">← MENU</button>
+                <button onclick="sairDaPartida()" class="btn-voltar-topo">&larr; MENU</button>
             </div>
 
             <div class="status-bar">
@@ -238,7 +275,7 @@
                     <button type="button" class="btn-mini-step" id="btn-menos" onclick="alterarSegundos(-1)">-</button>
                     
                     <button type="button" class="btn-mini-play" id="btn-tocar" onclick="tocarTrecho()">
-                        <span id="icone-play">⏵</span> PLAY (<span id="txt-segundos-selecionados">1</span>s)
+                        <span id="icone-play">&#9205;</span> PLAY (<span id="txt-segundos-selecionados">1</span>s)
                     </button>
 
                     <button type="button" class="btn-mini-step" id="btn-mais" onclick="alterarSegundos(1)">+</button>
@@ -262,16 +299,14 @@
                     <button onclick="ouvirAudio('trecho')" class="btn-secundario" style="font-size: 12px;">OUVIR TRECHO</button>
                     <button onclick="ouvirAudio('musica')" class="btn-secundario" style="font-size: 12px;">OUVIR MÚSICA (30s)</button>
                 </div>
-                <button id="btn-proximo" onclick="proximaAcao()" style="background: #ff0055; color: #fff; margin-top: 5px;">PRÓXIMA MÚSICA ➔</button>
+                <button id="btn-proximo" onclick="proximaAcao()" style="background: #ff0055; color: #fff; margin-top: 5px;">PRÓXIMA MÚSICA &#10132;</button>
             </div>
         </div>
 
         <!-- TELA 4: RELATÓRIO FINAL -->
-         
-        <!-- TELA 4: RELATÓRIO FINAL -->
         <div id="tela-fim" class="tela">
             <div style="text-align: left;">
-                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">← MENU</button>
+                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">&larr; MENU</button>
             </div>
             <img src="assets/1.png" alt="SONORO" class="logo-header">
             <p style="margin-bottom: 15px;">Resumo do seu desempenho:</p>
@@ -313,11 +348,10 @@
             <button onclick="jogarNovamente()" style="margin-top: 15px;">JOGAR NOVAMENTE</button>
         </div>
 
-        <!--TELA RANKING-->
         <!-- TELA DE RANKING -->
         <div id="tela-ranking" class="tela">
             <div style="text-align: left;">
-                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">← MENU</button>
+                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">&larr; MENU</button>
             </div>
             <img src="assets/1.png" alt="SONORO" class="logo-header">
             <h2 style="color: #ff0055; margin-bottom: 10px; font-size: 18px;">RANKING GLOBAL - MODO CLÁSSICO</h2>
@@ -336,7 +370,6 @@
             <button onclick="voltarAoMenuArtistas()" class="btn-secundario" style="margin-top: 15px;">VOLTAR AO MENU</button>
         </div>
     </div>
-
 
     <audio id="player" crossOrigin="anonymous"></audio>
 
