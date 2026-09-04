@@ -1,3 +1,4 @@
+// audio
 const player = document.getElementById("player");
 
 let audioCtx = null;
