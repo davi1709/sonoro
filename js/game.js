@@ -1,11 +1,51 @@
+// gam
 function confirmarModo(modo) {
     fecharModalModo();
     modoJogo = modo;
     
     if (modo === 'custom') {
+        const wrapperAlbuns = document.getElementById("container-filtro-albuns-wrapper");
+        if (wrapperAlbuns) {
+            wrapperAlbuns.style.display = tipoMenuAtual === 'artistas' ? 'block' : 'none';
+        }
+        
+        // Garante o estado padrão do seletor de estilo de resposta personalizado
+        tipoResposta = 'digitar';
+        const btnDigitarCustom = document.getElementById("btn-custom-digitar");
+        const btnMarcarCustom = document.getElementById("btn-custom-marcar");
+        if (btnDigitarCustom && btnMarcarCustom) {
+            btnDigitarCustom.className = "btn-modo-classico";
+            btnDigitarCustom.style.flex = "1";
+            btnDigitarCustom.style.margin = "0";
+            
+            btnMarcarCustom.className = "btn-modo-vazado";
+            btnMarcarCustom.style.flex = "1";
+            btnMarcarCustom.style.margin = "0";
+        }
+        const selectOculto = document.getElementById("config-tipo-resposta");
+        if (selectOculto) selectOculto.value = 'digitar';
+
         mostrarTela('tela-config');
     } else {
         document.getElementById("modal-estilo-resposta").classList.add("ativo");
+    }
+}
+
+function selecionarEstiloCustom(estilo) {
+    tipoResposta = estilo;
+    const selectOculto = document.getElementById("config-tipo-resposta");
+    if (selectOculto) selectOculto.value = estilo;
+
+    const btnDigitarCustom = document.getElementById("btn-custom-digitar");
+    const btnMarcarCustom = document.getElementById("btn-custom-marcar");
+    if (btnDigitarCustom && btnMarcarCustom) {
+        if (estilo === 'digitar') {
+            btnDigitarCustom.className = "btn-modo-classico";
+            btnMarcarCustom.className = "btn-modo-vazado";
+        } else {
+            btnMarcarCustom.className = "btn-modo-classico";
+            btnDigitarCustom.className = "btn-modo-vazado";
+        }
     }
 }
 
@@ -33,7 +73,8 @@ function iniciarPartida() {
     let acervoAtivo = [...bancoDeMusicas];
 
     if (modoJogo === 'custom') {
-        tipoResposta = document.getElementById("config-tipo-resposta").value;
+        const selectOculto = document.getElementById("config-tipo-resposta");
+        tipoResposta = selectOculto ? selectOculto.value : 'digitar';
         modoRankingAtual = tipoResposta;
         
         let valTrecho = document.getElementById("config-trecho").value;
@@ -48,22 +89,24 @@ function iniciarPartida() {
         tempoTotal = parseInt(document.getElementById("config-tempo").value);
         totalRodadas = parseInt(document.getElementById("config-rodadas").value);
 
-        const incluirEPs = !document.getElementById("grupo-ep").classList.contains("inativo");
-        const incluirSingles = !document.getElementById("grupo-single").classList.contains("inativo");
+        if (tipoMenuAtual === 'artistas') {
+            const incluirEPs = !document.getElementById("grupo-ep").classList.contains("inativo");
+            const incluirSingles = !document.getElementById("grupo-single").classList.contains("inativo");
 
-        const cardsAlbuns = document.querySelectorAll(".card-album");
-        const albunsMarcados = [];
-        cardsAlbuns.forEach(card => {
-            if (!card.classList.contains("inativo")) {
-                card.dataset.ids.split(',').forEach(id => albunsMarcados.push(parseInt(id)));
-            }
-        });
+            const cardsAlbuns = document.querySelectorAll(".card-album");
+            const albunsMarcados = [];
+            cardsAlbuns.forEach(card => {
+                if (!card.classList.contains("inativo")) {
+                    card.dataset.ids.split(',').forEach(id => albunsMarcados.push(parseInt(id)));
+                }
+            });
 
-        acervoAtivo = acervoAtivo.filter(m => {
-            if (m.tipoGrupo === "ep") return incluirEPs;
-            if (m.tipoGrupo === "single") return incluirSingles;
-            return albunsMarcados.includes(m.albumId);
-        });
+            acervoAtivo = acervoAtivo.filter(m => {
+                if (m.tipoGrupo === "ep") return incluirEPs;
+                if (m.tipoGrupo === "single") return incluirSingles;
+                return albunsMarcados.includes(m.albumId);
+            });
+        }
 
         if (acervoAtivo.length === 0) {
             alert("Selecione pelo menos uma opção para jogar!");
@@ -371,7 +414,6 @@ function exibirEstatisticas() {
     player.currentTime = 0;
     pararAnimacaoOndas();
 
-    // SALVA A PONTUAÇÃO FINAL GLOBALMENTE PARA O RANKING
     scoreFinalPartida = Number(score) || 0;
 
     const acertos = historicoGeral.filter(h => h.acertou);
@@ -437,10 +479,14 @@ function exibirEstatisticas() {
             containerEnvioRanking.style.display = 'none';
         } else {
             containerEnvioRanking.style.display = 'block';
+        }
     }
-}
 
     mostrarTela('tela-fim');
 }
 
-renderizarGridArtistas();
+if (tipoMenuAtual === 'artistas') {
+    renderizarGridArtistas();
+} else {
+    renderizarGridPlaylists();
+}
