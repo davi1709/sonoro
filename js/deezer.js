@@ -126,7 +126,7 @@ async function iniciarDownloadArtista(idArtista) {
 
             if (!gruposAlbuns.has(chaveGrupo)) {
                 gruposAlbuns.set(chaveGrupo, { 
-                    titulo: album.title || "Álbum Desconhecido", 
+                    titulo: album.title || t('album_desconhecido'), 
                     capa: album.cover_medium || album.cover || '', 
                     ids: [],
                     tipo: tipoGrupo
@@ -356,7 +356,7 @@ async function buscarSugestoesPlaylist(query) {
                 item.className = "autocomplete-item";
                 item.innerHTML = `
                     <img src="${pl.picture_small || pl.picture_medium}" alt="${pl.title}">
-                    <span>${pl.title} (${pl.nb_tracks || 0} músicas)</span>
+                    <span>${pl.title} (${pl.nb_tracks || 0} ${t('musicas_playlist')})</span>
                 `;
                 item.onclick = (e) => {
                     e.stopPropagation();
@@ -471,7 +471,7 @@ async function adicionarArtistaDeezer() {
         alert("Erro ao buscar o artista.");
     } finally {
         btn.disabled = false;
-        btn.innerText = "Adicionar";
+        btn.innerText = t('btn_adicionar');
     }
 }
 
@@ -511,6 +511,6 @@ async function adicionarPlaylistDeezer() {
         alert("Erro ao buscar a playlist.");
     } finally {
         btn.disabled = false;
-        btn.innerText = "Adicionar";
+        btn.innerText = t('btn_adicionar');
     }
 }
