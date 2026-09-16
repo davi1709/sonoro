@@ -16,7 +16,7 @@ Um quiz musical feito com HTML, CSS e JS, com músicas puxadas em tempo real da 
 <br>
 
 <div align="center">
-  <img src="assets/gameplay.gif" alt="SONORO em ação" width="960">
+  <img src="assets/gameplay.gif" alt="SONORO em ação" width="860">
 </div>
 
 <br>
@@ -70,9 +70,9 @@ O SONORO detecta o idioma do navegador automaticamente na primeira visita, mas v
 ## Mais telas
 
 <div align="center">
-  <img src="assets/tela-inicial.png" alt="Tela inicial" width="240">
-  <img src="assets/resultado.png" alt="Tela de resultado" width="240">
-  <img src="assets/ranking.png" alt="Ranking global" width="240">
+  <img src="assets/tela-inicial.png" alt="Tela inicial" width="340">
+  <img src="assets/resultado.png" alt="Tela de resultado" width="340">
+  <img src="assets/ranking.png" alt="Ranking global" width="340">
 </div>
 
 <br>
