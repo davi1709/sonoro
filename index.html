@@ -15,6 +15,12 @@
 </head>
 <body>
 
+    <!-- SELETOR DE IDIOMA (FIXO EM TODAS AS TELAS) -->
+    <div id="seletor-idioma" style="position: fixed; top: 12px; left: 12px; z-index: 10000; display: flex; gap: 4px; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 8px;">
+        <button type="button" id="btn-idioma-pt" onclick="alternarIdioma('pt')" style="margin: 0; padding: 4px 8px; font-size: 11px; width: auto; background: transparent; border: 1px solid #444; color: #888; cursor: pointer; border-radius: 5px;">PT</button>
+        <button type="button" id="btn-idioma-en" onclick="alternarIdioma('en')" style="margin: 0; padding: 4px 8px; font-size: 11px; width: auto; background: transparent; border: 1px solid #444; color: #888; cursor: pointer; border-radius: 5px;">EN</button>
+    </div>
+
     <!-- TELA 0: ANIMATED SPLASH SCREEN -->
     <div id="splash-screen">
         <svg class="svg-container" viewBox="0 0 1200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,8 +33,8 @@
         </svg>
 
         <div id="home-buttons" class="home-buttons-container">
-            <button class="btn-jogar-principal" onclick="iniciarFluxoJogo()">JOGAR</button>
-            <button class="btn-como-jogar-principal" onclick="abrirTelaComoJogar()">COMO JOGAR</button>
+            <button class="btn-jogar-principal" data-i18n="jogar" onclick="iniciarFluxoJogo()">JOGAR</button>
+            <button class="btn-como-jogar-principal" data-i18n="como_jogar_btn" onclick="abrirTelaComoJogar()">COMO JOGAR</button>
         </div>
     </div>
 
@@ -36,22 +42,22 @@
         <!-- TELA COMO JOGAR -->
         <div id="tela-como-jogar" class="tela">
             <div style="text-align: left;">
-                <button onclick="voltarParaSplash()" class="btn-voltar-topo">&larr; VOLTAR</button>
+                <button onclick="voltarParaSplash()" class="btn-voltar-topo" data-i18n-html="voltar_arrow">&larr; VOLTAR</button>
             </div>
             
             <img src="assets/1.png" alt="SONORO" class="logo-header">
 
             <div class="how-to-play-card">
-                <h3>COMO JOGAR</h3>
+                <h3 data-i18n="como_jogar_titulo">COMO JOGAR</h3>
                 <ul>
-                    <li> <strong>Escolha um Artista ou Playlist:</strong> Selecione o item entre a lista ou adicione um novo diretamente na barra superior.</li>
-                    <li> <strong>Ouça o Trecho:</strong> Aperte o play para ouvir uma amostra rápida da música (de 1 a 10 segundos).</li>
-                    <li> <strong>Adivinhe Rápido:</strong> Digite o nome da música ou marque uma das opções antes que o tempo acabe!</li>
-                    <li> <strong>Acumule Pontos:</strong> Quanto mais rápido você acertar, menor for el trecho e menos você ouvi-lo maior será sua pontuação. Teste seus conhecimentos musicais!</li>
+                    <li> <strong data-i18n="como_jogar_item1_forte">Escolha um Artista ou Playlist:</strong> <span data-i18n="como_jogar_item1_texto">Selecione o item entre a lista ou adicione um novo diretamente na barra superior.</span></li>
+                    <li> <strong data-i18n="como_jogar_item2_forte">Ouça o Trecho:</strong> <span data-i18n="como_jogar_item2_texto">Aperte o play para ouvir uma amostra rápida da música (de 1 a 10 segundos).</span></li>
+                    <li> <strong data-i18n="como_jogar_item3_forte">Adivinhe Rápido:</strong> <span data-i18n="como_jogar_item3_texto">Digite o nome da música ou marque uma das opções antes que o tempo acabe!</span></li>
+                    <li> <strong data-i18n="como_jogar_item4_forte">Acumule Pontos:</strong> <span data-i18n="como_jogar_item4_texto">Quanto mais rápido você acertar, menor for o trecho e menos você ouvi-lo, maior será sua pontuação. Teste seus conhecimentos musicais!</span></li>
                 </ul>
             </div>
 
-            <button class="btn-jogar-principal" onclick="iniciarFluxoJogo()">JOGAR AGORA</button>
+            <button class="btn-jogar-principal" data-i18n="jogar_agora" onclick="iniciarFluxoJogo()">JOGAR AGORA</button>
         </div>
 
         <!-- TELA 1: SELEÇÃO DE ARTISTA / PLAYLIST -->
@@ -67,21 +73,21 @@
             <!-- MENU ALTERNADOR (ARTISTAS / PLAYLISTS) -->
             <div style="display: flex; gap: 10px; margin-bottom: 15px; position: relative;">
                 <div style="flex: 1; position: relative; display: flex;">
-                    <button id="btn-menu-artistas" onclick="alternarMenuPrincipal('artistas')" class="btn-modo-classico" style="width: 100%; margin: 0; font-size: 13px; padding: 10px;">ARTISTAS</button>
+                    <button id="btn-menu-artistas" data-i18n="btn_artistas" onclick="alternarMenuPrincipal('artistas')" class="btn-modo-classico" style="width: 100%; margin: 0; font-size: 13px; padding: 10px;">ARTISTAS</button>
                 </div>
                 <div style="flex: 1; position: relative; display: flex;">
-                    <span class="etiqueta-novo-badge">NOVO!</span>
-                    <button id="btn-menu-playlists" onclick="alternarMenuPrincipal('playlists')" class="btn-modo-vazado" style="width: 100%; margin: 0; font-size: 13px; padding: 10px;">PLAYLISTS</button>
+                    <span class="etiqueta-novo-badge" data-i18n="badge_novo">NOVO!</span>
+                    <button id="btn-menu-playlists" data-i18n="btn_playlists" onclick="alternarMenuPrincipal('playlists')" class="btn-modo-vazado" style="width: 100%; margin: 0; font-size: 13px; padding: 10px;">PLAYLISTS</button>
                 </div>
             </div>
 
             <!-- SECAO ARTISTAS -->
             <div id="secao-artistas">
                 <div class="campo-config">
-                    <label>Adicionar Novo Artista (Nome ou ID Deezer):</label>
+                    <label data-i18n="lbl_add_artista">Adicionar Novo Artista (Nome ou ID Deezer):</label>
                     <div class="add-deezer-box">
-                        <input type="text" id="input-deezer-id" placeholder="Ex: ABBA, Kali Uchis..." oninput="buscarSugestoesArtista(this.value)" autocomplete="off">
-                        <button type="button" id="btn-add-artista" onclick="adicionarArtistaDeezer()">Adicionar</button>
+                        <input type="text" id="input-deezer-id" data-i18n-placeholder="placeholder_add_artista" placeholder="Ex: ABBA, Kali Uchis..." oninput="buscarSugestoesArtista(this.value)" autocomplete="off">
+                        <button type="button" id="btn-add-artista" data-i18n="btn_adicionar" onclick="adicionarArtistaDeezer()">Adicionar</button>
                         <div id="autocomplete-artistas" class="autocomplete-list"></div>
                     </div>
                 </div>
@@ -100,8 +106,8 @@
                 </select>
 
                 <div class="campo-config">
-                    <label>Catálogo de Artistas:</label>
-                    <input type="text" id="input-busca-catalogo" placeholder="Buscar no catálogo..." oninput="filtrarGridArtistas()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
+                    <label data-i18n="lbl_catalogo_artistas">Catálogo de Artistas:</label>
+                    <input type="text" id="input-busca-catalogo" data-i18n-placeholder="placeholder_busca_catalogo" placeholder="Buscar no catálogo..." oninput="filtrarGridArtistas()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
                     <div id="grid-artistas" class="grid-artistas"></div>
                 </div>
             </div>
@@ -109,10 +115,10 @@
             <!-- SECAO PLAYLISTS -->
             <div id="secao-playlists" style="display: none;">
                 <div class="campo-config">
-                    <label>Adicionar Nova Playlist (Nome ou ID Deezer):</label>
+                    <label data-i18n="lbl_add_playlist">Adicionar Nova Playlist (Nome ou ID Deezer):</label>
                     <div class="add-deezer-box">
-                        <input type="text" id="input-playlist-id" placeholder="Ex: Top Pop, ID da playlist..." oninput="buscarSugestoesPlaylist(this.value)" autocomplete="off">
-                        <button type="button" id="btn-add-playlist" onclick="adicionarPlaylistDeezer()">Adicionar</button>
+                        <input type="text" id="input-playlist-id" data-i18n-placeholder="placeholder_add_playlist" placeholder="Ex: Top Pop, ID da playlist..." oninput="buscarSugestoesPlaylist(this.value)" autocomplete="off">
+                        <button type="button" id="btn-add-playlist" data-i18n="btn_adicionar_playlist" onclick="adicionarPlaylistDeezer()">Adicionar</button>
                         <div id="autocomplete-playlists" class="autocomplete-list"></div>
                     </div>
                 </div>
@@ -120,8 +126,8 @@
                 <select id="seletor-playlist" onchange="alterarPlaylist()" style="display: none;"></select>
 
                 <div class="campo-config">
-                    <label>Catálogo de Playlists:</label>
-                    <input type="text" id="input-busca-catalogo-playlist" placeholder="Buscar playlist..." oninput="filtrarGridPlaylists()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
+                    <label data-i18n="lbl_catalogo_playlists">Catálogo de Playlists:</label>
+                    <input type="text" id="input-busca-catalogo-playlist" data-i18n-placeholder="placeholder_busca_playlist" placeholder="Buscar playlist..." oninput="filtrarGridPlaylists()" style="margin-bottom: 10px; padding: 8px 12px; font-size: 13px;">
                     <div id="grid-playlists" class="grid-playlists-horizontal"></div>
                 </div>
             </div>
@@ -130,7 +136,7 @@
                 <div class="loading-container">
                     <div id="barra-progresso-carga" class="loading-bar"></div>
                 </div>
-                <p id="loading-txt">Carregando faixas...</p>
+                <p id="loading-txt" data-i18n="carregando_faixas">Carregando faixas...</p>
             </div>
         </div>
 
@@ -143,59 +149,59 @@
                     <div class="loading-container">
                         <div id="modal-barra-progresso-carga" class="loading-bar"></div>
                     </div>
-                    <p id="modal-loading-txt" style="font-size: 12px; margin-bottom: 0;">Carregando faixas...</p>
+                    <p id="modal-loading-txt" data-i18n="carregando_faixas" style="font-size: 12px; margin-bottom: 0;">Carregando faixas...</p>
                 </div>
 
-                <p style="margin-bottom: 15px; font-size: 13px;">Escolha o modo de jogo para começar:</p>
+                <p data-i18n="modal_escolha_modo" style="margin-bottom: 15px; font-size: 13px;">Escolha o modo de jogo para começar:</p>
                 
                 <div class="modo-opcao-container">
-                    <button id="btn-modal-classico" class="btn-modo-classico" onclick="confirmarModo('classico')" disabled>MODO CLÁSSICO</button>
+                    <button id="btn-modal-classico" data-i18n="modo_classico_titulo" class="btn-modo-classico" onclick="confirmarModo('classico')" disabled>MODO CLÁSSICO</button>
                     <div class="btn-help-info" onclick="toggleHelpTooltip(this, event)">?
-                        <div class="tooltip-explicacao">Acerte a música antes que o tempo acabe! Quanto menor o trecho e menos você ouvi-lo, mais pontos!</div>
+                        <div class="tooltip-explicacao" data-i18n="modo_classico_desc">Acerte a música antes que o tempo acabe! Quanto menor o trecho e menos você ouvi-lo, mais pontos!</div>
                     </div>
                 </div>
 
                 <div class="modo-opcao-container">
-                    <button id="btn-modal-custom" class="btn-modo-vazado" onclick="confirmarModo('custom')" disabled>MODO PERSONALIZADO</button>
+                    <button id="btn-modal-custom" data-i18n="modo_custom_titulo" class="btn-modo-vazado" onclick="confirmarModo('custom')" disabled>MODO PERSONALIZADO</button>
                     <div class="btn-help-info" onclick="toggleHelpTooltip(this, event)">?
-                        <div class="tooltip-explicacao">Personalize sua experiência selecionando tempo, inclusão de álbuns e até mesmo a duração de trechos.</div>
+                        <div class="tooltip-explicacao" data-i18n="modo_custom_desc">Personalize sua experiência selecionando tempo, inclusão de álbuns e até mesmo a duração de trechos.</div>
                     </div>
                 </div>
 
                 <div class="modo-opcao-container">
-                    <button id="btn-modal-zen" class="btn-modo-vazado" onclick="confirmarModo('zen')" disabled>MODO ZEN</button>
+                    <button id="btn-modal-zen" data-i18n="modo_zen_titulo" class="btn-modo-vazado" onclick="confirmarModo('zen')" disabled>MODO ZEN</button>
                     <div class="btn-help-info" onclick="toggleHelpTooltip(this, event)">?
-                        <div class="tooltip-explicacao">Jogue com calma! Com trechos de grande duração e sem timers, agora você pode demorar o quanto quiser para responder.</div>
+                        <div class="tooltip-explicacao" data-i18n="modo_zen_desc">Jogue com calma! Com trechos de grande duração e sem timers, agora você pode demorar o quanto quiser para responder.</div>
                     </div>
                 </div>
 
-                <button onclick="fecharModalModo()" class="btn-secundario" style="border: none; margin-top: 10px; margin-bottom: 0; color: #888;">VOLTAR</button>
+                <button onclick="fecharModalModo()" class="btn-secundario" data-i18n="voltar" style="border: none; margin-top: 10px; margin-bottom: 0; color: #888;">VOLTAR</button>
             </div>
         </div>
 
         <!-- MODAL SELEÇÃO TIPO DE RESPOSTA (INÍCIO DA PARTIDA) -->
         <div id="modal-estilo-resposta" class="modal-overlay">
             <div class="modal-content">
-                <h2 style="font-size: 18px; margin-bottom: 10px;">Estilo de Resposta</h2>
-                <p style="margin-bottom: 15px; font-size: 13px;">Como deseja responder durante a partida?</p>
+                <h2 data-i18n="estilo_resposta_titulo" style="font-size: 18px; margin-bottom: 10px;">Estilo de Resposta</h2>
+                <p data-i18n="estilo_resposta_pergunta" style="margin-bottom: 15px; font-size: 13px;">Como deseja responder durante a partida?</p>
 
-                <button class="btn-modo-classico" onclick="selecionarEstiloEIniciar('digitar')" style="margin-bottom: 10px;">DIGITAR RESPOSTA</button>
-                <button class="btn-modo-vazado" onclick="selecionarEstiloEIniciar('marcar')">MARCAR (5 OPÇÕES)</button>
+                <button class="btn-modo-classico" data-i18n="btn_digitar_resposta" onclick="selecionarEstiloEIniciar('digitar')" style="margin-bottom: 10px;">DIGITAR RESPOSTA</button>
+                <button class="btn-modo-vazado" data-i18n="btn_marcar_opcoes" onclick="selecionarEstiloEIniciar('marcar')">MARCAR (5 OPÇÕES)</button>
             </div>
         </div>
 
         <!-- TELA 2: CONFIGURAÇÕES (MODO PERSONALIZADO) -->
         <div id="tela-config" class="tela">
             <div style="text-align: left;">
-                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo">&larr; VOLTAR</button>
+                <button onclick="mostrarTela('tela-inicio')" class="btn-voltar-topo" data-i18n-html="voltar_arrow">&larr; VOLTAR</button>
             </div>
             <img src="assets/1.png" alt="SONORO" class="logo-header">
 
             <div class="campo-config">
-                <label>Estilo de Resposta:</label>
+                <label data-i18n="lbl_estilo_resposta">Estilo de Resposta:</label>
                 <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                    <button type="button" id="btn-custom-digitar" onclick="selecionarEstiloCustom('digitar')" class="btn-modo-classico" style="flex: 1; margin: 0; font-size: 13px; padding: 10px;">DIGITAR</button>
-                    <button type="button" id="btn-custom-marcar" onclick="selecionarEstiloCustom('marcar')" class="btn-modo-vazado" style="flex: 1; margin: 0; font-size: 13px; padding: 10px;">MARCAR</button>
+                    <button type="button" id="btn-custom-digitar" data-i18n="btn_digitar" onclick="selecionarEstiloCustom('digitar')" class="btn-modo-classico" style="flex: 1; margin: 0; font-size: 13px; padding: 10px;">DIGITAR</button>
+                    <button type="button" id="btn-custom-marcar" data-i18n="btn_marcar" onclick="selecionarEstiloCustom('marcar')" class="btn-modo-vazado" style="flex: 1; margin: 0; font-size: 13px; padding: 10px;">MARCAR</button>
                 </div>
                 <select id="config-tipo-resposta" style="display: none;">
                     <option value="digitar" selected>Digitar</option>
@@ -204,58 +210,58 @@
             </div>
 
             <div class="campo-config" id="container-filtro-albuns-wrapper">
-                <label>Filtrar por Álbuns, EPs e Singles:</label>
+                <label data-i18n="lbl_filtro_albuns">Filtrar por Álbuns, EPs e Singles:</label>
                 <div id="lista-albuns-filtro" class="grid-albuns"></div>
             </div>
             
             <div class="campo-config">
-                <label>Tempo do trecho de áudio (segundos)</label>
+                <label data-i18n="lbl_tempo_trecho">Tempo do trecho de áudio (segundos)</label>
                 <select id="config-trecho">
-                    <option value="1">1 Segundo</option>
-                    <option value="2" selected>2 Segundos</option>
-                    <option value="3">3 Segundos</option>
-                    <option value="4">4 Segundos</option>
-                    <option value="5">5 Segundos</option>
-                    <option value="6">6 Segundos</option>
-                    <option value="7">7 Segundos</option>
-                    <option value="8">8 Segundos</option>
-                    <option value="9">9 Segundos</option>
-                    <option value="10">10 Segundos</option>
-                    <option value="ajustavel">Ajustável (como no Modo Clássico)</option>
+                    <option value="1" data-i18n="opt_1s">1 Segundo</option>
+                    <option value="2" data-i18n="opt_2s" selected>2 Segundos</option>
+                    <option value="3" data-i18n="opt_3s">3 Segundos</option>
+                    <option value="4" data-i18n="opt_4s">4 Segundos</option>
+                    <option value="5" data-i18n="opt_5s">5 Segundos</option>
+                    <option value="6" data-i18n="opt_6s">6 Segundos</option>
+                    <option value="7" data-i18n="opt_7s">7 Segundos</option>
+                    <option value="8" data-i18n="opt_8s">8 Segundos</option>
+                    <option value="9" data-i18n="opt_9s">9 Segundos</option>
+                    <option value="10" data-i18n="opt_10s">10 Segundos</option>
+                    <option value="ajustavel" data-i18n="opt_ajustavel">Ajustável (como no Modo Clássico)</option>
                 </select>
             </div>
 
             <div class="campo-config" id="container-config-tempo">
-                <label>Duração para responder (segundos)</label>
+                <label data-i18n="lbl_duracao_resposta">Duração para responder (segundos)</label>
                 <select id="config-tempo">
-                    <option value="10">10 Segundos</option>
-                    <option value="15" selected>15 Segundos</option>
-                    <option value="20">20 Segundos</option>
-                    <option value="30">30 Segundos</option>
+                    <option value="10" data-i18n="opt_10s_dur">10 Segundos</option>
+                    <option value="15" data-i18n="opt_15s_dur" selected>15 Segundos</option>
+                    <option value="20" data-i18n="opt_20s_dur">20 Segundos</option>
+                    <option value="30" data-i18n="opt_30s_dur">30 Segundos</option>
                 </select>
             </div>
 
             <div class="campo-config">
-                <label>Quantidade de Músicas</label>
+                <label data-i18n="lbl_qtd_musicas">Quantidade de Músicas</label>
                 <select id="config-rodadas">
-                    <option value="5">5 Músicas</option>
-                    <option value="10" selected>10 Músicas</option>
-                    <option value="15">15 Músicas</option>
+                    <option value="5" data-i18n="opt_5_musicas">5 Músicas</option>
+                    <option value="10" data-i18n="opt_10_musicas" selected>10 Músicas</option>
+                    <option value="15" data-i18n="opt_15_musicas">15 Músicas</option>
                 </select>
             </div>
 
-            <button onclick="iniciarPartida()">INICIAR PARTIDA</button>
+            <button onclick="iniciarPartida()" data-i18n="btn_iniciar_partida">INICIAR PARTIDA</button>
         </div>
 
         <!-- TELA 3: JOGO -->
         <div id="tela-jogo" class="tela">
             <div style="text-align: left;">
-                <button onclick="sairDaPartida()" class="btn-voltar-topo">&larr; MENU</button>
+                <button onclick="sairDaPartida()" class="btn-voltar-topo" data-i18n-html="menu_arrow">&larr; MENU</button>
             </div>
 
             <div class="status-bar">
-                <span>Rodada: <span id="rodada-atual">1</span>/<span id="rodada-total">10</span></span>
-                <span>Pontos: <span id="score-total" class="pontos-gradiente">0</span></span>
+                <span><span data-i18n="lbl_rodada">Rodada:</span> <span id="rodada-atual">1</span>/<span id="rodada-total">10</span></span>
+                <span><span data-i18n="lbl_pontos">Pontos:</span> <span id="score-total" class="pontos-gradiente">0</span></span>
             </div>
 
             <div class="tempo-container" id="container-barra-tempo">
@@ -275,7 +281,7 @@
                     <button type="button" class="btn-mini-step" id="btn-menos" onclick="alterarSegundos(-1)">-</button>
                     
                     <button type="button" class="btn-mini-play" id="btn-tocar" onclick="tocarTrecho()">
-                        <span id="icone-play">&#9205;</span> PLAY (<span id="txt-segundos-selecionados">1</span>s)
+                        <span id="icone-play">&#9205;</span> <span data-i18n="lbl_play">PLAY</span> (<span id="txt-segundos-selecionados">1</span>s)
                     </button>
 
                     <button type="button" class="btn-mini-step" id="btn-mais" onclick="alterarSegundos(1)">+</button>
@@ -284,9 +290,9 @@
 
             <!-- MODO DIGITAR -->
             <form id="form-digitar" onsubmit="conferir(event)" style="margin-top: 10px;">
-                <input type="text" id="resposta" list="lista-musicas" placeholder="Qual é a música?" autocomplete="off">
+                <input type="text" id="resposta" list="lista-musicas" data-i18n-placeholder="placeholder_resposta" placeholder="Qual é a música?" autocomplete="off">
                 <datalist id="lista-musicas"></datalist>
-                <button type="submit" id="btn-enviar" class="btn-secundario" style="margin-top: 10px;">ENVIAR (ENTER)</button>
+                <button type="submit" id="btn-enviar" class="btn-secundario" data-i18n="btn_enviar_enter" style="margin-top: 10px;">ENVIAR (ENTER)</button>
             </form>
 
             <!-- MODO MARCAR (OPÇÕES) -->
@@ -296,41 +302,41 @@
             
             <div id="painel-pos-resposta" style="display: none; margin-top: 15px;">
                 <div style="display: flex; gap: 8px;">
-                    <button onclick="ouvirAudio('trecho')" class="btn-secundario" style="font-size: 12px;">OUVIR TRECHO</button>
-                    <button onclick="ouvirAudio('musica')" class="btn-secundario" style="font-size: 12px;">OUVIR MÚSICA (30s)</button>
+                    <button onclick="ouvirAudio('trecho')" class="btn-secundario" data-i18n="btn_ouvir_trecho" style="font-size: 12px;">OUVIR TRECHO</button>
+                    <button onclick="ouvirAudio('musica')" class="btn-secundario" data-i18n="btn_ouvir_musica" style="font-size: 12px;">OUVIR MÚSICA (30s)</button>
                 </div>
-                <button id="btn-proximo" onclick="proximaAcao()" style="background: #ff0055; color: #fff; margin-top: 5px;">PRÓXIMA MÚSICA &#10132;</button>
+                <button id="btn-proximo" onclick="proximaAcao()" data-i18n-html="btn_proxima_musica" style="background: #ff0055; color: #fff; margin-top: 5px;">PRÓXIMA MÚSICA &#10132;</button>
             </div>
         </div>
 
         <!-- TELA 4: RELATÓRIO FINAL -->
         <div id="tela-fim" class="tela">
             <div style="text-align: left;">
-                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">&larr; MENU</button>
+                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo" data-i18n-html="menu_arrow">&larr; MENU</button>
             </div>
             <img src="assets/1.png" alt="SONORO" class="logo-header">
-            <p style="margin-bottom: 15px;">Resumo do seu desempenho:</p>
+            <p style="margin-bottom: 15px;" data-i18n="resumo_desempenho">Resumo do seu desempenho:</p>
 
             <div class="grid-stats">
                 <div class="card-stat">
-                    <div class="label">Pontuação Final</div>
+                    <div class="label" data-i18n="stat_pontuacao_final">Pontuação Final</div>
                     <div class="val pontos-gradiente" id="stat-score">0</div>
                 </div>
                 <div class="card-stat">
-                    <div class="label">Músicas Acertadas</div>
+                    <div class="label" data-i18n="stat_musicas_acertadas">Músicas Acertadas</div>
                     <div class="val" id="stat-acertos">0/0</div>
                 </div>
                 <div class="card-stat">
-                    <div class="label">Tempo Médio (Acertos)</div>
+                    <div class="label" data-i18n="stat_tempo_medio">Tempo Médio (Acertos)</div>
                     <div class="val" id="stat-tempo-medio">0.0s</div>
                 </div>
                 <div class="card-stat">
-                    <div class="label">Mais Rápida</div>
+                    <div class="label" data-i18n="stat_mais_rapida">Mais Rápida</div>
                     <div class="val" id="stat-mais-rapido">-</div>
                 </div>
             </div>
 
-            <div style="text-align: left; font-size: 12px; color: #888; margin-bottom: 6px;">Histórico da Partida:</div>
+            <div style="text-align: left; font-size: 12px; color: #888; margin-bottom: 6px;" data-i18n="historico_partida">Histórico da Partida:</div>
             <div class="historico-container" id="stat-historico-lista"></div>
 
             <!-- BOTÃO DE TROFÉU NO CANTO SUPERIOR DIREITO -->
@@ -342,32 +348,32 @@
 
             <!-- BOTÃO DE ENVIAR PARA O RANKING -->
             <div id="container-envio-ranking" style="margin-top: 15px;">
-                <button type="button" class="btn-modo-classico" onclick="abrirModalSubmeterRanking()" style="width: 100%; margin: 0;">ENVIAR PONTUAÇÃO AO RANKING</button>
+                <button type="button" class="btn-modo-classico" data-i18n="btn_enviar_ranking" onclick="abrirModalSubmeterRanking()" style="width: 100%; margin: 0;">ENVIAR PONTUAÇÃO AO RANKING</button>
             </div>
 
-            <button onclick="jogarNovamente()" style="margin-top: 15px;">JOGAR NOVAMENTE</button>
+            <button onclick="jogarNovamente()" data-i18n="btn_jogar_novamente" style="margin-top: 15px;">JOGAR NOVAMENTE</button>
         </div>
 
         <!-- TELA DE RANKING -->
         <div id="tela-ranking" class="tela">
             <div style="text-align: left;">
-                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo">&larr; MENU</button>
+                <button onclick="voltarAoMenuArtistas()" class="btn-voltar-topo" data-i18n-html="menu_arrow">&larr; MENU</button>
             </div>
             <img src="assets/1.png" alt="SONORO" class="logo-header">
-            <h2 style="color: #ff0055; margin-bottom: 10px; font-size: 18px;">RANKING GLOBAL - MODO CLÁSSICO</h2>
+            <h2 style="color: #ff0055; margin-bottom: 10px; font-size: 18px;" data-i18n="titulo_ranking_global">RANKING GLOBAL - MODO CLÁSSICO</h2>
             
             <!-- Botões para alternar entre os rankings -->
             <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
-                <button id="tab-ranking-digitar" onclick="abrirTelaRanking('digitar')" class="btn-secundario" style="font-size: 12px; padding: 8px 12px; margin: 0;">Modo Digitar</button>
-                <button id="tab-ranking-marcar" onclick="abrirTelaRanking('marcar')" class="btn-secundario" style="font-size: 12px; padding: 8px 12px; margin: 0; opacity: 0.5;">Modo Marcar</button>
+                <button id="tab-ranking-digitar" onclick="abrirTelaRanking('digitar')" class="btn-secundario" data-i18n="tab_modo_digitar" style="font-size: 12px; padding: 8px 12px; margin: 0;">Modo Digitar</button>
+                <button id="tab-ranking-marcar" onclick="abrirTelaRanking('marcar')" class="btn-secundario" data-i18n="tab_modo_marcar" style="font-size: 12px; padding: 8px 12px; margin: 0; opacity: 0.5;">Modo Marcar</button>
             </div>
 
             <div class="historico-container" id="lista-ranking-global" style="max-height: 280px;">
                 <!-- Os itens do ranking serão injetados aqui via JS -->
-                <p style="text-align: center; color: #888; padding: 20px;">Carregando ranking...</p>
+                <p style="text-align: center; color: #888; padding: 20px;" data-i18n="carregando_ranking">Carregando ranking...</p>
             </div>
 
-            <button onclick="voltarAoMenuArtistas()" class="btn-secundario" style="margin-top: 15px;">VOLTAR AO MENU</button>
+            <button onclick="voltarAoMenuArtistas()" class="btn-secundario" data-i18n="btn_voltar_menu" style="margin-top: 15px;">VOLTAR AO MENU</button>
         </div>
     </div>
 
@@ -376,15 +382,15 @@
     <!-- MODAL DE SUBMISSÃO AO RANKING (POP-UP) -->
     <div id="modal-submeter-ranking" class="modal-overlay">
         <div class="modal-content">
-            <h2 style="font-size: 18px; margin-bottom: 10px;">Salvar Pontuação</h2>
-            <p style="margin-bottom: 15px; font-size: 13px;">Insira seu apelido para aparecer no ranking global:</p>
+            <h2 style="font-size: 18px; margin-bottom: 10px;" data-i18n="titulo_salvar_pontuacao">Salvar Pontuação</h2>
+            <p style="margin-bottom: 15px; font-size: 13px;" data-i18n="txt_insira_apelido">Insira seu apelido para aparecer no ranking global:</p>
             
             <div class="campo-config">
-                <input type="text" id="input-nome-ranking" placeholder="Seu apelido..." maxlength="15" autocomplete="off" style="margin-bottom: 15px;">
+                <input type="text" id="input-nome-ranking" data-i18n-placeholder="placeholder_apelido" placeholder="Seu apelido..." maxlength="15" autocomplete="off" style="margin-bottom: 15px;">
             </div>
 
-            <button class="btn-modo-classico" onclick="enviarScoreFirebase()" style="margin-bottom: 10px;">ENVIAR</button>
-            <button onclick="fecharModalSubmeterRanking()" class="btn-secundario" style="border: none; margin-bottom: 0; color: #888;">VOLTAR</button>
+            <button class="btn-modo-classico" data-i18n="btn_enviar" onclick="enviarScoreFirebase()" style="margin-bottom: 10px;">ENVIAR</button>
+            <button onclick="fecharModalSubmeterRanking()" class="btn-secundario" data-i18n="voltar" style="border: none; margin-bottom: 0; color: #888;">VOLTAR</button>
         </div>
     </div>
 
@@ -402,6 +408,7 @@
     const db = firebase.firestore();
     </script>
 
+    <script src="js/i18n.js"></script>
     <script src="js/state.js"></script>
     <script src="js/deezer.js"></script>
     <script src="js/audio.js"></script>
