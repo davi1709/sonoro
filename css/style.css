@@ -535,3 +535,13 @@ select:focus, input[type="text"]:focus { border-color: #666; }
     z-index: 9999;
     animation: fadeIn 1s ease-in-out forwards;
 }
+/* Seletor de Idioma */
+#seletor-idioma button {
+    transition: all 0.2s ease;
+    font-weight: 700;
+}
+#seletor-idioma button.idioma-ativo {
+    background-color: #ff0055 !important;
+    border-color: #ff0055 !important;
+    color: #ffffff !important;
+}
