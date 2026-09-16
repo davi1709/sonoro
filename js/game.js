@@ -109,7 +109,7 @@ function iniciarPartida() {
         }
 
         if (acervoAtivo.length === 0) {
-            alert("Selecione pelo menos uma opção para jogar!");
+            alert(t('msg_selecione_opcao'));
             return;
         }
     }
@@ -323,7 +323,7 @@ function atualizarTempo(timestamp) {
     if (tempoRestante > 0) {
         loopTempo = requestAnimationFrame(atualizarTempo);
     } else {
-        encerrarRodada(false, "Tempo esgotado!", 'tempo');
+        encerrarRodada(false, t('msg_tempo_esgotado'), 'tempo');
     }
 }
 
@@ -361,7 +361,7 @@ function processarResposta(acertou) {
         
         encerrarRodada(true, `+${pontosGanhos} pts!`);
     } else {
-        encerrarRodada(false, `Resposta incorreta!`, 'erro');
+        encerrarRodada(false, t('msg_resposta_incorreta'), 'erro');
     }
 }
 
@@ -383,7 +383,7 @@ function encerrarRodada(acertou, mensagem, motivo) {
     historicoGeral.push({ musica: musicaAtual, acertou: acertou, tempo: tempoGasto, motivo: motivo });
 
     let divResultado = document.getElementById("resultado");
-    divResultado.innerHTML = `${mensagem} <br><span class="nome-revelado">Música: ${musicaAtual.nomeExibicao}</span>`;
+    divResultado.innerHTML = `${mensagem} <br><span class="nome-revelado">${t('lbl_musica_revelada')} ${musicaAtual.nomeExibicao}</span>`;
     divResultado.style.color = acertou ? "#1db954" : "#ff4d4d";
 
     const btnsMarcar = document.querySelectorAll(".btn-opcao-marcar");
@@ -393,10 +393,10 @@ function encerrarRodada(acertou, mensagem, motivo) {
     
     const btnProximo = document.getElementById("btn-proximo");
     if (rodadaAtual === totalRodadas || filaDeMusicas.length === 0) {
-        btnProximo.innerText = "VER ESTATÍSTICAS";
+        btnProximo.innerText = t('btn_ver_estatisticas');
         btnProximo.style.background = "#ff0055";
     } else {
-        btnProximo.innerText = "PRÓXIMA MÚSICA ➔";
+        btnProximo.innerText = t('btn_proxima_musica');
         btnProximo.style.background = "#ff0055";
     }
 
