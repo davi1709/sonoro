@@ -87,7 +87,7 @@ function voltarAoMenuArtistas() {
 }
 
 function sairDaPartida() {
-    if (!confirm("Sair da partida atual? O progresso desta partida será perdido.")) return;
+    if (!confirm(t('msg_sair_partida'))) return;
     voltarAoMenuArtistas();
 }
 
@@ -105,7 +105,7 @@ function atualizarProgressoGlobalUI() {
 
     if (itensEmAndamento.length === 0) {
         if (barraMain) barraMain.style.width = `100%`;
-        if (txtMain) txtMain.innerText = "Faixas prontas!";
+        if (txtMain) txtMain.innerText = t('faixas_prontas');
         setTimeout(() => {
             let aindaTem = Object.values(cacheAtivoDict).filter(c => c.status === 'carregando').length;
             if (aindaTem === 0 && painelMain) painelMain.style.display = "none";
@@ -118,7 +118,7 @@ function atualizarProgressoGlobalUI() {
     let mediaGlobal = Math.floor(soma / itensEmAndamento.length);
 
     if (barraMain) barraMain.style.width = `${mediaGlobal}%`;
-    if (txtMain) txtMain.innerText = `Carregando faixas...`;
+    if (txtMain) txtMain.innerText = t('carregando_faixas');
 }
 
 function atualizarModalUI(idArtista) {
@@ -134,7 +134,7 @@ function atualizarModalUI(idArtista) {
 
     if (cacheObj.status === 'concluido') {
         if (barraModal) barraModal.style.width = `100%`;
-        if (txtModal) txtModal.innerText = "Faixas prontas!";
+        if (txtModal) txtModal.innerText = t('faixas_prontas');
         if (btnClassico) btnClassico.disabled = false;
         if (btnCustom) btnCustom.disabled = false;
         if (btnZen) btnZen.disabled = false;
@@ -146,7 +146,7 @@ function atualizarModalUI(idArtista) {
     } else {
         if (modalPainelCarga) modalPainelCarga.style.display = "block";
         if (barraModal) barraModal.style.width = `${cacheObj.progresso}%`;
-        if (txtModal) txtModal.innerText = "Carregando faixas...";
+        if (txtModal) txtModal.innerText = t('carregando_faixas');
         if (btnClassico) btnClassico.disabled = true;
         if (btnCustom) btnCustom.disabled = true;
         if (btnZen) btnZen.disabled = true;
@@ -166,7 +166,7 @@ function atualizarModalUIPlaylist(idPlaylist) {
 
     if (cacheObj.status === 'concluido') {
         if (barraModal) barraModal.style.width = `100%`;
-        if (txtModal) txtModal.innerText = "Faixas prontas!";
+        if (txtModal) txtModal.innerText = t('faixas_prontas');
         if (btnClassico) btnClassico.disabled = false;
         if (btnCustom) btnCustom.disabled = false;
         if (btnZen) btnZen.disabled = false;
@@ -178,7 +178,7 @@ function atualizarModalUIPlaylist(idPlaylist) {
     } else {
         if (modalPainelCarga) modalPainelCarga.style.display = "block";
         if (barraModal) barraModal.style.width = `${cacheObj.progresso}%`;
-        if (txtModal) txtModal.innerText = "Carregando faixas...";
+        if (txtModal) txtModal.innerText = t('carregando_faixas');
         if (btnClassico) btnClassico.disabled = true;
         if (btnCustom) btnCustom.disabled = true;
         if (btnZen) btnZen.disabled = true;
@@ -437,7 +437,7 @@ async function enviarScoreFirebase() {
 
     } catch (e) {
         console.error("Erro ao enviar score:", e);
-        alert("Erro ao enviar pontuação. Verifique sua conexão.");
+        alert(t('msg_erro_enviar_pontuacao'));
         const btnEnviar = document.querySelector("#modal-submeter-ranking .btn-modo-classico");
         if (btnEnviar) btnEnviar.disabled = false;
     }
@@ -455,7 +455,7 @@ async function abrirTelaRanking(modo = 'digitar') {
     }
 
     const containerRanking = document.getElementById("lista-ranking-global");
-    containerRanking.innerHTML = `<p style="text-align: center; color: #888; padding: 20px;">Carregando ranking...</p>`;
+    containerRanking.innerHTML = `<p style="text-align: center; color: #888; padding: 20px;">${t('carregando_ranking')}</p>`;
 
     try {
         const nomeColecao = modo === 'marcar' ? 'ranking_classico_marcar' : 'ranking_classico_digitar';
@@ -465,7 +465,7 @@ async function abrirTelaRanking(modo = 'digitar') {
         containerRanking.innerHTML = "";
 
         if (snapshot.empty) {
-            containerRanking.innerHTML = `<p style="text-align: center; color: #888; padding: 20px;">Nenhuma pontuação registrada neste modo ainda.</p>`;
+            containerRanking.innerHTML = `<p style="text-align: center; color: #888; padding: 20px;">${t('ranking_vazio')}</p>`;
             return;
         }
 
@@ -483,8 +483,8 @@ async function abrirTelaRanking(modo = 'digitar') {
             div.innerHTML = `
                 <div style="font-weight: bold; font-size: 15px; color: #ff0055; width: 30px; text-align: center;">#${posicaoReal}</div>
                 <div class="info-track" style="margin-left: 8px;">
-                    <div class="title" style="font-size: 14px;">${escapeHtml(item.nome || "Anônimo")} - <span style="color: #1db954;">${pontuacaoValida}pts</span></div>
-                    <div class="status" style="color: #aaa;">${escapeHtml(item.artista || "Desconhecido")} | Feito em: ${item.data || "N/A"}</div>
+                    <div class="title" style="font-size: 14px;">${escapeHtml(item.nome || t('anonimo'))} - <span style="color: #1db954;">${pontuacaoValida}pts</span></div>
+                    <div class="status" style="color: #aaa;">${escapeHtml(item.artista || t('desconhecido'))} | ${t('feito_em')} ${item.data || "N/A"}</div>
                 </div>
             `;
             containerRanking.appendChild(div);
@@ -492,6 +492,6 @@ async function abrirTelaRanking(modo = 'digitar') {
 
     } catch (e) {
         console.error("Erro detalhado ao buscar ranking:", e);
-        containerRanking.innerHTML = `<p style="text-align: center; color: #ff4d4d; padding: 20px;">Erro ao carregar o ranking. Veja o console (F12).</p>`;
+        containerRanking.innerHTML = `<p style="text-align: center; color: #ff4d4d; padding: 20px;">${t('erro_carregar_ranking')}</p>`;
     }
 }
