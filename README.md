@@ -16,7 +16,7 @@ Um quiz musical feito com HTML, CSS e JS, com músicas puxadas em tempo real da 
 <br>
 
 <div align="center">
-  <img src="assets/gameplay.gif" alt="SONORO em ação" width="320">
+  <img src="assets/gameplay.gif" alt="SONORO em ação" width="960">
 </div>
 
 <br>
@@ -35,7 +35,7 @@ Não tem banco de músicas fixo — qualquer artista ou playlist pública (inclu
 
 
 <div align="center">
-  <img src="assets/modos.png" alt="Seleção de modo" width="280">
+  <img src="assets/modos.png" alt="Seleção de modo" width="640">
 </div>
 
 | Modo | Descrição |
