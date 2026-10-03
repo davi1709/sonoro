@@ -98,9 +98,10 @@ sonoro/
 │   ├── state.js         # Estado global do jogo
 │   ├── deezer.js        # Integração com a API da Deezer
 │   ├── audio.js         # Player e visualizador de ondas
-│   ├── ui.js             # Renderização de telas e ranking
-│   └── game.js           # Lógica principal do jogo
-└── assets/               # Ícones e imagens
+│   ├── ui.js            # Renderização de telas e ranking
+│   ├── share.js         # Imagem de desempenho final 
+│   └── game.js          # Lógica principal do jogo
+└── assets/             # Ícones e imagens
 ```
 
 <br>
