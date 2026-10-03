@@ -115,49 +115,61 @@ async function iniciarDownloadArtista(idArtista) {
     let totalAlbuns = albuns.length;
 
     if (totalAlbuns > 0) {
-        for (let i = 0; i < totalAlbuns; i++) {
-            let album = albuns[i];
-            let tipoGrupo = "album";
-            
-            if (album.record_type === "ep") tipoGrupo = "ep";
-            else if (album.record_type === "single") tipoGrupo = "single";
+        // Busca as faixas de vários álbuns em paralelo (em lotes), em vez de um por vez,
+        // pra deixar o carregamento de artistas tão rápido quanto o de playlists.
+        const TAMANHO_LOTE = 6;
 
-            let chaveGrupo = album.title ? album.title.trim().toLowerCase() : String(album.id);
+        for (let inicio = 0; inicio < totalAlbuns; inicio += TAMANHO_LOTE) {
+            let lote = albuns.slice(inicio, inicio + TAMANHO_LOTE);
 
-            if (!gruposAlbuns.has(chaveGrupo)) {
-                gruposAlbuns.set(chaveGrupo, { 
-                    titulo: album.title || t('album_desconhecido'), 
-                    capa: album.cover_medium || album.cover || '', 
-                    ids: [],
-                    tipo: tipoGrupo
-                });
-            }
-            gruposAlbuns.get(chaveGrupo).ids.push(album.id);
+            let resultadosLote = await Promise.all(
+                lote.map(album => buscarDeezer(`https://api.deezer.com/album/${album.id}/tracks?limit=100`))
+            );
 
-            let resFaixas = await buscarDeezer(`https://api.deezer.com/album/${album.id}/tracks?limit=100`);
+            lote.forEach((album, idxLote) => {
+                let tipoGrupo = "album";
 
-            if (resFaixas && resFaixas.data) {
-                resFaixas.data.forEach(track => {
-                    if (track.preview) {
-                        let nomeBase = normalizarNome(track.title);
-                        if (nomeBase.length > 0) {
-                            const existente = listaProcessada.get(nomeBase);
-                            if (!existente || (ehVersaoAlternativa(existente.nomeExibicao) && !ehVersaoAlternativa(track.title))) {
-                                listaProcessada.set(nomeBase, {
-                                    nomeNormalizado: nomeBase,
-                                    nomeExibicao: track.title,
-                                    preview: track.preview,
-                                    albumId: album.id,
-                                    capa: album.cover_medium || (album.cover ? album.cover : ''),
-                                    tipoGrupo: tipoGrupo
-                                });
+                if (album.record_type === "ep") tipoGrupo = "ep";
+                else if (album.record_type === "single") tipoGrupo = "single";
+
+                let chaveGrupo = album.title ? album.title.trim().toLowerCase() : String(album.id);
+
+                if (!gruposAlbuns.has(chaveGrupo)) {
+                    gruposAlbuns.set(chaveGrupo, {
+                        titulo: album.title || "Álbum Desconhecido",
+                        capa: album.cover_medium || album.cover || '',
+                        ids: [],
+                        tipo: tipoGrupo
+                    });
+                }
+                gruposAlbuns.get(chaveGrupo).ids.push(album.id);
+
+                let resFaixas = resultadosLote[idxLote];
+
+                if (resFaixas && resFaixas.data) {
+                    resFaixas.data.forEach(track => {
+                        if (track.preview) {
+                            let nomeBase = normalizarNome(track.title);
+                            if (nomeBase.length > 0) {
+                                const existente = listaProcessada.get(nomeBase);
+                                if (!existente || (ehVersaoAlternativa(existente.nomeExibicao) && !ehVersaoAlternativa(track.title))) {
+                                    listaProcessada.set(nomeBase, {
+                                        nomeNormalizado: nomeBase,
+                                        nomeExibicao: track.title,
+                                        preview: track.preview,
+                                        albumId: album.id,
+                                        capa: album.cover_medium || (album.cover ? album.cover : ''),
+                                        tipoGrupo: tipoGrupo
+                                    });
+                                }
                             }
                         }
-                    }
-                });
-            }
+                    });
+                }
+            });
 
-            let pct = Math.floor(((i + 1) / totalAlbuns) * 100);
+            let albunsConcluidos = Math.min(inicio + TAMANHO_LOTE, totalAlbuns);
+            let pct = Math.floor((albunsConcluidos / totalAlbuns) * 100);
             cacheObj.progresso = pct;
 
             const miniFill = document.getElementById(`mini-fill-${idArtista}`);
@@ -356,7 +368,7 @@ async function buscarSugestoesPlaylist(query) {
                 item.className = "autocomplete-item";
                 item.innerHTML = `
                     <img src="${pl.picture_small || pl.picture_medium}" alt="${pl.title}">
-                    <span>${pl.title} (${pl.nb_tracks || 0} ${t('musicas_playlist')})</span>
+                    <span>${pl.title} (${pl.nb_tracks || 0} músicas)</span>
                 `;
                 item.onclick = (e) => {
                     e.stopPropagation();
@@ -471,7 +483,7 @@ async function adicionarArtistaDeezer() {
         alert("Erro ao buscar o artista.");
     } finally {
         btn.disabled = false;
-        btn.innerText = t('btn_adicionar');
+        btn.innerText = "Adicionar";
     }
 }
 
@@ -511,6 +523,6 @@ async function adicionarPlaylistDeezer() {
         alert("Erro ao buscar a playlist.");
     } finally {
         btn.disabled = false;
-        btn.innerText = t('btn_adicionar');
+        btn.innerText = "Adicionar";
     }
 }
