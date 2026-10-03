@@ -134,7 +134,15 @@ const traducoes = {
 
         // Deezer
         album_desconhecido: "Álbum Desconhecido",
-        musicas_playlist: "músicas"
+        musicas_playlist: "músicas",
+
+        // Compartilhamento
+        lbl_artista_resultado: "Artista",
+        lbl_playlist_resultado: "Playlist",
+        gerando_imagem: "Gerando imagem...",
+        texto_compartilhar: "Joguei o SONORO, confere meu resultado!",
+        erro_gerar_imagem: "Não foi possível gerar a imagem. Tente novamente.",
+        btn_compartilhar_resultado: "COMPARTILHAR RESULTADO",
     },
     en: {
         jogar: "PLAY",
@@ -254,7 +262,14 @@ const traducoes = {
         msg_erro_enviar_pontuacao: "Error submitting score. Check your connection.",
 
         album_desconhecido: "Unknown Album",
-        musicas_playlist: "tracks"
+        musicas_playlist: "tracks",
+
+        lbl_artista_resultado: "Artist",
+        lbl_playlist_resultado: "Playlist",
+        gerando_imagem: "Generating image...",
+        texto_compartilhar: "I just played SONORO, check out my result!",
+        erro_gerar_imagem: "Couldn't generate the image. Try again.",
+        btn_compartilhar_resultado: "SHARE RESULT",
     }
 };
 
