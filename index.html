@@ -352,6 +352,7 @@
             </div>
 
             <button onclick="jogarNovamente()" data-i18n="btn_jogar_novamente" style="margin-top: 15px;">JOGAR NOVAMENTE</button>
+            <button onclick="gerarImagemResultado()" id="btn-compartilhar-resultado" class="btn-secundario" data-i18n="btn_compartilhar_resultado" style="margin-top: 10px;">COMPARTILHAR RESULTADO</button>
         </div>
 
         <!-- TELA DE RANKING -->
@@ -394,6 +395,17 @@
         </div>
     </div>
 
+    <!-- MODAL DE SUCESSO AO ENVIAR AO RANKING (POP-UP INDEPENDENTE) -->
+    <div id="modal-sucesso-ranking" class="modal-overlay">
+        <div class="modal-content">
+             <h2 style="font-size: 18px; margin-bottom: 10px; color: #1db954;">Pontuação Enviada! 🎉</h2>
+                <p style="margin-bottom: 20px; font-size: 13px;">Sua pontuação já está no ranking global. O que deseja fazer agora?</p>
+
+                <button class="btn-modo-classico" onclick="irParaRankingDoSucesso()" style="margin-bottom: 10px;">VER RANKING</button>
+                <button onclick="fecharModalSucessoRanking()" class="btn-modo-vazado" style="margin-bottom: 0;">VOLTAR AO RESULTADO</button>
+        </div>
+    </div>
+
     <script>
     const firebaseConfig = {
     apiKey: "AIzaSyCf-uCLKHGGlzwRoaBwlf41zPwW6b-XX9Y",
@@ -414,5 +426,6 @@
     <script src="js/audio.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/share.js"></script>
 </body>
 </html>
