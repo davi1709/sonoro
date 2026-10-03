@@ -431,9 +431,10 @@ async function enviarScoreFirebase() {
         });
 
         if (btnEnviar) btnEnviar.disabled = false;
-        
+
         fecharModalSubmeterRanking();
-        abrirTelaRanking(modoRankingAtual);
+        document.getElementById("container-envio-ranking").style.display = "none"; 
+        document.getElementById("modal-sucesso-ranking").classList.add("ativo");
 
     } catch (e) {
         console.error("Erro ao enviar score:", e);
@@ -441,6 +442,15 @@ async function enviarScoreFirebase() {
         const btnEnviar = document.querySelector("#modal-submeter-ranking .btn-modo-classico");
         if (btnEnviar) btnEnviar.disabled = false;
     }
+}
+
+function fecharModalSucessoRanking() {
+    document.getElementById("modal-sucesso-ranking").classList.remove("ativo");
+}
+
+function irParaRankingDoSucesso() {
+    fecharModalSucessoRanking();
+    abrirTelaRanking(modoRankingAtual);
 }
 
 async function abrirTelaRanking(modo = 'digitar') {
