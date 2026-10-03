@@ -408,6 +408,7 @@ function proximaAcao() {
 }
 
 function exibirEstatisticas() {
+    document.getElementById("container-envio-ranking").style.display = "";
     if (timeoutAudio) clearTimeout(timeoutAudio);
     if (loopProgressoTrecho) cancelAnimationFrame(loopProgressoTrecho);
     player.pause();
